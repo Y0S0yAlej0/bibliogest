@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="../Icons/logo.png" />
+  <title>Registro</title>
+  <link rel="stylesheet" href="../css/sytles.css" />
+</head>
+
+<body>
+  <script src="../js/slidebar.js"></script>
+  <div class="login-card">
+    <h2>Registrarse</h2>
+
+    <!-- Puedes agregar alertas aquí si las necesitas -->
+    <!-- <div class="alert alert-success">Usuario creado exitosamente</div> -->
+    <!-- <div class="alert alert-danger">Error al crear usuario</div> -->
+
+    <form method="post" action="../Back/crear.php">
+      <div class="form-group">
+        <label for="nombre">Nombre Completo</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Obligatorio" required />
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo Electrónico</label>
+        <input type="email" id="correo" name="correo" placeholder="Obligatorio" required />
+      </div>
+
+      <div class="form-group">
+        <label for="contraseña">Contraseña</label>
+        <input type="password" id="contraseña" name="contraseña" placeholder="Obligatorio" required />
+      </div>
+
+      <div class="form-group">
+        <label for="numero">Número Telefónico</label>
+        <input type="text" id="numero" name="numero" placeholder="Obligatorio" required />
+      </div>
+
+      <div class="form-footer">
+        <a href="login.html">¿Ya tienes cuenta? Inicia sesión</a>
+      </div>
+
+      <button type="submit" class="submit-btn">Crear Cuenta</button>
+    </form>
+  </div>
+
+  <div id="footer-container"></div>
+
+<!-- Enlace al JS que carga el footer -->
+<script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
+
+</body>
+
+</html>
