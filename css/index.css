@@ -6,6 +6,19 @@
       color: #fff;
     }
 
+    /* Fondo que ocupa toda la pantalla */
+#particles-js {
+    position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #0d0d0d; /* Fondo negro oscuro */
+  z-index: -1;
+ filter: blur(2px); /* Aquí está el desenfoque */
+}
+a{
+  text-decoration: none;
+}
+
     .container {
       display: flex;
       justify-content: space-between;
@@ -57,7 +70,7 @@
     }
 
     .btn {
-      background-color: #006f7a;
+      background-color: #fefefe24;
       border: none;
       padding: 12px 24px;
       font-size: 16px;
@@ -110,3 +123,4 @@
         transform: scale(1);
       }
     }
+
