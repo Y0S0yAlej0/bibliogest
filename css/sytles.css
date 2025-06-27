@@ -1,4 +1,4 @@
-                                          /*Diseño general*/
+                                          /*Diseño Del index*/
 body {
     background-color: #1A1A1A;
     color: #F0EDE5;
@@ -7,6 +7,20 @@ body {
     padding-top: 60px;
   }
 
+  .fondo {
+    background-image: url('../Assets/image/fondo.png');
+    height: 100vh;
+    background-size:auto;
+    background-position: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    filter: blur(10px);
+    width: 100%;
+
+
+  }
  
 
 
@@ -103,7 +117,7 @@ body {
     color: #004B50;
   }
 
-                                            /*Diseño del Login*/
+                                            /*Diseño del Login y Register*/
 
 
 /* -------- Estilos específicos para login -------- */
