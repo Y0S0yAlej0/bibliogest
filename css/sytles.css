@@ -5,6 +5,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding-top: 60px;
+    font-size: 16px;
   }
 
   .fondo {
@@ -12,7 +13,7 @@ body {
     height: 100vh;
     background-size:auto;
     background-position: center;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: -1;
@@ -78,11 +79,25 @@ body {
     transform: scale(1.15);
   }
    
+  h1 {
+
+    text-align: left;
+    color: #cfbc90;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
   h2 {
     color: 	#00759D;
   }
   h3{
     color: #fffefe;
+  }
+
+  .text {
+    text-align: left;
+    color: #c0c0c0;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
   }
 
   .section {
@@ -115,6 +130,17 @@ body {
   .card h5 {
     margin: 10px 0;
     color: #004B50;
+  }
+
+  .title {
+    text-align: left;
+    color: #caa54f;
+    font-size: 100px;
+    font-weight: 700;
+    margin-bottom: 20px;
+
+ 
+    
   }
 
                                             /*Diseño del Login y Register*/
