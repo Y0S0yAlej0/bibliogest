@@ -13,7 +13,7 @@
   height: 100%;
   background: #0d0d0d; /* Fondo negro oscuro */
   z-index: -1;
- filter: blur(2px); /* Aquí está el desenfoque */
+
 }
 a{
   text-decoration: none;
@@ -105,21 +105,21 @@ a{
       100% {
         opacity: 1;
         transform: scale(1);
-        filter: drop-shadow(0 0 10px #00bfff);
+        filter: drop-shadow(0 0 10px #00bfff73);
       }
     }
 
     @keyframes pulse {
       0% {
-        filter: drop-shadow(0 0 10px #00bfff);
+        filter: drop-shadow(0 0 10px #00bfff74);
         transform: scale(1);
       }
       50% {
-        filter: drop-shadow(0 0 25px #ffffff);
+        filter: drop-shadow(0 0 25px #00bfff);
         transform: scale(1.05);
       }
       100% {
-        filter: drop-shadow(0 0 10px #00bfff);
+        filter: drop-shadow(0 0 10px #00bfff73);
         transform: scale(1);
       }
     }

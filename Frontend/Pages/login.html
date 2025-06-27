@@ -7,25 +7,24 @@
   <link rel="icon" type="image/x-icon" href="../Icons/logo.png" />
   <title>Inicio Sesión</title>
   <link rel="stylesheet" href="../css/sytles.css" />
+  <link rel="icon" href="../Assets/Icons/favicon.svg" />
 </head>
 
 <body>
   <div class="login-card">
     <h2>Iniciar Sesión</h2>
-
     <!-- Puedes agregar alertas manualmente si las necesitas -->
     <!-- <div class="alert alert-success">Inicio de sesión exitoso</div> -->
     <!-- <div class="alert alert-danger">Usuario o contraseña incorrectos</div> -->
-
-    <form action="inicio.html" method="get">
+    <form id="loginForm" method="get">
       <div class="form-group">
-        <label for="usuario">Usuario</label>
-        <input type="text" id="usuario" name="usuario" placeholder="Obligatorio" required />
+        <label for="usuario">Correo</label>
+        <input type="email" id="correo" placeholder="Obligatorio" required />
       </div>
 
       <div class="form-group">
         <label for="pass">Contraseña</label>
-        <input type="password" id="pass" name="pass" placeholder="Obligatorio" required />
+        <input type="password" id="contrasena" placeholder="Obligatorio" required />
       </div>
 
       <div class="form-footer">
@@ -34,11 +33,13 @@
 
       <button type="submit" class="submit-btn">Ingresar</button>
 </form>
+<div id="mensaje-error" style="color: red;"></div>
 
   </div>
 
   
                                          <!--Integraciones con js-->
+
 
  <!--Integracion de slidebar-->
 <script src="../js/slidebar.js"></script>
@@ -47,6 +48,11 @@
 <!-- Integracion de footer -->
 <div id="footer-container"></div>
 <script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
+
+<!-- Integración de login con el backend -->
+<script src="../Js/login.js" defer></script>
+
+
 </body>
 
 </html>
