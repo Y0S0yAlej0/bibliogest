@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,16 +7,11 @@
   <title>Registro</title>
   <link rel="stylesheet" href="../css/sytles.css" />
 </head>
-
 <body>
   <div class="login-card">
     <h2>Registrarse</h2>
 
-    <!-- Puedes agregar alertas aquí si las necesitas -->
-    <!-- <div class="alert alert-success">Usuario creado exitosamente</div> -->
-    <!-- <div class="alert alert-danger">Error al crear usuario</div> -->
-
-    <form method="post" action="../Back/crear.php">
+    <form id="registroForm">
       <div class="form-group">
         <label for="nombre">Nombre Completo</label>
         <input type="text" id="nombre" name="nombre" placeholder="Obligatorio" required />
@@ -30,7 +24,7 @@
 
       <div class="form-group">
         <label for="contraseña">Contraseña</label>
-        <input type="password" id="contraseña" name="contraseña" placeholder="Obligatorio" required />
+        <input type="password" id="contraseña" name="contrasena" placeholder="Obligatorio" required />
       </div>
 
       <div class="form-group">
@@ -46,15 +40,45 @@
     </form>
   </div>
 
-                                         <!--Integraciones con js-->
+  <!-- Integraciones con JS -->
+  <script src="../js/slidebar.js"></script>
+  <div id="footer-container"></div>
+  <script src="../js/include-footer.js"></script>
 
- <!--Integracion de slidebar-->
-<script src="../js/slidebar.js"></script>
+  <!-- Script para enviar datos al backend -->
+  <script>
+    const form = document.getElementById("registroForm");
 
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-<!-- Integracion de footer -->
-<div id="footer-container"></div>
-<script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
+      const data = {
+        nombre: document.getElementById("nombre").value,
+        correo: document.getElementById("correo").value,
+        contrasena: document.getElementById("contraseña").value,
+        numero: document.getElementById("numero").value
+      };
+
+      fetch("http://localhost:8080/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Error al registrar usuario");
+          }
+          return response.json();
+        })
+        .then(usuario => {
+          alert("✅ Usuario registrado con éxito");
+          form.reset();
+        })
+        .catch(error => {
+          console.error("❌ Error:", error);
+          alert("❌ No se pudo registrar el usuario");
+        });
+    });
+  </script>
 </body>
-
 </html>

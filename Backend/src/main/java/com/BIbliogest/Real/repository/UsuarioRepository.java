@@ -1,4 +1,7 @@
 package com.BIbliogest.Real.repository;
 
-public class UsuarioRepository {
+import com.BIbliogest.Real.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 }
