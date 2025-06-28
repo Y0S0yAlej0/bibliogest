@@ -3,43 +3,44 @@ package com.BIbliogest.Real.controller;
 import com.BIbliogest.Real.model.Usuario;
 import com.BIbliogest.Real.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // permite que el frontend se conecte
 public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // REGISTRO sin validación
-    @PostMapping
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
-        Usuario guardado = usuarioRepository.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+    @PostMapping("/registro")
+    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
+        Optional<Usuario> existente = usuarioRepository.findByCorreo(usuario.getCorreo());
+
+        if (existente.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El correo ya está registrado");
+        }
+
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok("Usuario registrado con éxito");
     }
 
-    // INICIO DE SESIÓN
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
-        String correo = loginData.get("correo");
-        String contrasena = loginData.get("contrasena");
+    public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByCorreo(usuario.getCorreo());
 
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
-
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            if (usuario.getContrasena().equals(contrasena)) {
-                return ResponseEntity.ok(usuario);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        if (usuarioEncontrado.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Correo no registrado");
         }
+
+        if (!usuarioEncontrado.get().getContrasena().equals(usuario.getContrasena())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
+        }
+
+        return ResponseEntity.ok(usuarioEncontrado.get());
     }
 }

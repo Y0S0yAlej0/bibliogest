@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro</title>
   <link rel="stylesheet" href="../css/sytles.css" />
-   <link rel="icon" href="../Assets/Icons/favicon.svg" />
+  <link rel="icon" href="../Assets/Icons/favicon.svg" />
 </head>
 <body>
   <div class="login-card">
@@ -38,47 +38,14 @@
 
       <button type="submit" class="submit-btn">Crear Cuenta</button>
     </form>
+
+    <!-- Aquí se mostrará un mensaje si hay error -->
+    <div id="mensaje-error" style="color: red; margin-top: 10px;"></div>
   </div>
 
-  <!-- Integraciones con JS -->
+  <!-- JS externos -->
   <script src="../js/slidebar.js"></script>
-  <div id="footer-container"></div>
   <script src="../js/include-footer.js"></script>
-
-  <!-- Script para enviar datos al backend -->
-  <script>
-    const form = document.getElementById("registroForm");
-
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const data = {
-        nombre: document.getElementById("nombre").value,
-        correo: document.getElementById("correo").value,
-        contrasena: document.getElementById("contraseña").value,
-        numero: document.getElementById("numero").value
-      };
-
-      fetch("http://localhost:8080/api/usuarios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Error al registrar usuario");
-          }
-          return response.json();
-        })
-        .then(usuario => {
-          alert("✅ Usuario registrado con éxito");
-          form.reset();
-        })
-        .catch(error => {
-          console.error("❌ Error:", error);
-          alert("❌ No se pudo registrar el usuario");
-        });
-    });
-  </script>
+  <script src="../js/register.js"></script> <!-- Este es el nuevo archivo -->
 </body>
 </html>
