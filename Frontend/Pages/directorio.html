@@ -9,83 +9,46 @@
 </head>
 <body>
 
+
   <!-- Contenido principal -->
   <main class="container">
-    <section class="busqueda">
-      <h1>Catálogo de Libros</h1>
-      <form>
-        <input type="text" placeholder="Buscar por título">
-        <input type="text" placeholder="Buscar por autor">
-        <button type="submit">Buscar</button>
-      </form>
-    </section>
+<section class="busqueda">
+  <h1>Catálogo de Libros</h1>
+  <input type="text" id="buscar-input" placeholder="Buscar por título o autor">
+</section>
 
     <section class="nuevo-libro">
       <h2>Agregar Nuevo Libro</h2>
-      <form>
-        <label>Título</label>
-        <input type="text" required>
+  <form id="form-libro">
+  <label>Título</label>
+  <input type="text" name="titulo" required>
 
-        <label>Autor</label>
-        <input type="text" required>
+  <label>Autor</label>
+  <input type="text" name="autor" required>
 
-        <label>Descripción</label>
-        <textarea rows="3" required></textarea>
+  <label>Descripción</label>
+  <textarea name="descripcion" rows="3" required></textarea>
 
-        <label>URL de la Imagen de Portada</label>
-        <input type="url" placeholder="https://example.com/imagen.jpg" required>
+  <label>Género</label>
+  <input type="text" name="genero" required>
 
-        <button type="submit">Agregar Libro</button>
-      </form>
-    </section>
+  <label>ISBN</label>
+  <input type="text" name="isbn" required>
 
-    <!-- Tarjetas de libros estáticas como ejemplo visual -->
-    <section class="libros">
-      <div class="card">
-        <img src="https://via.placeholder.com/300x400?text=El+Quijote" alt="Portada de El Quijote">
-        <div class="info">
-          <h3>El Quijote</h3>
-          <p><strong>Autor:</strong> Miguel de Cervantes</p>
-          <p>Una de las obras literarias más importantes de la literatura española.</p>
-        </div>
-      </div>
+  <label>URL de la Imagen de Portada</label>
+  <input type="url" name="imagen" required>
 
-      <div class="card">
-        <img src="https://via.placeholder.com/300x400?text=Cien+Años+de+Soledad" alt="Portada de Cien Años de Soledad">
-        <div class="info">
-          <h3>Cien Años de Soledad</h3>
-          <p><strong>Autor:</strong> Gabriel García Márquez</p>
-          <p>Una obra emblemática del realismo mágico.</p>
-        </div>
-      </div>
+  <button type="submit">Agregar Libro</button>
+</form>
 
-      <div class="card">
-        <img src="https://via.placeholder.com/300x400?text=La+Sombra+del+Viento" alt="Portada de La Sombra del Viento">
-        <div class="info">
-          <h3>La Sombra del Viento</h3>
-          <p><strong>Autor:</strong> Carlos Ruiz Zafón</p>
-          <p>Una novela de intriga literaria ambientada en la Barcelona del siglo XX.</p>
-        </div>
-      </div>
+<div id="mensaje"></div>
 
-      <div class="card">
-        <img src="https://via.placeholder.com/300x400?text=1984" alt="Portada de 1984">
-        <div class="info">
-          <h3>1984</h3>
-          <p><strong>Autor:</strong> George Orwell</p>
-          <p>Una novela distópica sobre vigilancia y control totalitario.</p>
-        </div>
-      </div>
-    </section>
+    <!-- Aquí se cargarán las tarjetas de libros dinámicamente -->
+    <section class="libros"></section>
   </main>
-                                         <!--Integraciones con js-->
 
- <!--Integracion de slidebar-->
-<script src="../js/slidebar.js"></script>
-
-
-<!-- Integracion de footer -->
-<div id="footer-container"></div>
-<script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
-</body>
-</html>
+  <!-- Scripts -->
+  <script src="../js/slidebar.js"></script>
+  <div id="footer-container"></div>
+  <script src="../js/include-footer.js"></script>
+  <script src="../js/catalogo.js" defer></script>
