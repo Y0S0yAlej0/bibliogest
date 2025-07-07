@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-     <link rel="stylesheet" href="../css/slide-styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar</title>
+  <link rel="stylesheet" href="../css/slide-styles.css">
 </head>
 <body>
-    
+
 <div id="sidebar" class="sidebar">
   <button id="toggleBtn" class="toggle-btn">☰</button>
   <a href="inicio.html"><img src="../Assets/image/logo.png" alt="Logo" class="logo"></a>
@@ -18,8 +18,11 @@
     <a href="reseña.html">Reseñas</a>
     <a href="directorio.html">Directorio</a>
     <a href="news.html">News</a>
+    
+    <!-- 👇 Este es el enlace que se muestra solo si el usuario es admin -->
+    <a href="admin.html" id="adminLink" style="display: none;">Panel Admin</a>
   </nav>
 </div>
-    
+
 </body>
 </html>

@@ -25,6 +25,9 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El correo ya está registrado");
         }
 
+        // Asignar rol USER por defecto
+        usuario.setRol("USER");
+
         usuarioRepository.save(usuario);
         return ResponseEntity.ok("Usuario registrado con éxito");
     }
@@ -41,6 +44,7 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
         }
 
+        // Devolver todo el objeto Usuario incluyendo el rol
         return ResponseEntity.ok(usuarioEncontrado.get());
     }
 }

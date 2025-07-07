@@ -13,6 +13,8 @@ public class Usuario {
     private String correo;
     private String contrasena;
     private String numero;
+    private String rol;
+
 
     // Getters y Setters
 
@@ -29,4 +31,7 @@ public class Usuario {
 
     public String getNumero() { return numero; }
     public void setNumero(String numero) { this.numero = numero; }
+
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 }

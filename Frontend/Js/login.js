@@ -25,7 +25,12 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(usuario => {
           alert("✅ Bienvenido " + usuario.nombre);
-           window.location.href = "../Pages/inicio.html"; // ajusta esta ruta a la tuya
+
+          // 🔒 Guardar el usuario en localStorage
+          localStorage.setItem("usuario", JSON.stringify(usuario));
+
+          // 🔁 Redirigir al inicio
+          window.location.href = "../Pages/inicio.html";
         })
         .catch(error => {
           document.getElementById("mensaje-error").textContent = error.message;
