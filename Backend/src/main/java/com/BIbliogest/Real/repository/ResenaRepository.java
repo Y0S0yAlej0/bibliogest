@@ -1,4 +1,7 @@
 package com.BIbliogest.Real.repository;
 
-public interface ResenaRepository {
+import com.BIbliogest.Real.model.Resena;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ResenaRepository extends JpaRepository<Resena, Long> {
 }

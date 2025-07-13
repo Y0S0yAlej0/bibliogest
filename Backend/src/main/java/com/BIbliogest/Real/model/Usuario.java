@@ -1,6 +1,7 @@
 package com.BIbliogest.Real.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 
 @Entity
 public class Usuario {
@@ -9,10 +10,15 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String nombre;
+    @Setter
     private String correo;
+    @Setter
     private String contrasena;
+    @Setter
     private String numero;
+    @Setter
     private String rol;
 
 
@@ -21,17 +27,12 @@ public class Usuario {
     public Long getId() { return id; }
 
     public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
 
     public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
 
     public String getContrasena() { return contrasena; }
-    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
     public String getNumero() { return numero; }
-    public void setNumero(String numero) { this.numero = numero; }
 
     public String getRol() { return rol; }
-    public void setRol(String rol) { this.rol = rol; }
 }

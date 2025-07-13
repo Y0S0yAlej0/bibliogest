@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bibliogest - Reseñas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="../css/reseñas.css">
+  <link rel="icon" href="../Assets/Icons/favicon.svg" />
+</head>
+<body>
+
+  <main class="container">
+    <h1>Reseñas de Libros y Eventos</h1>
+    <p class="lead">Explore lo que otros usuarios opinan sobre nuestros servicios y eventos.</p>
+
+    <!-- Formulario para agregar una nueva reseña -->
+    <section class="card">
+      <h2 class="card-header">Agregar Reseña</h2>
+      <div class="card-body">
+        <form id="resenaForm">
+          <label for="inputRating">Calificación (1-5)</label>
+          <select id="inputRating" required>
+            <option selected disabled>Seleccione...</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+
+          <label for="inputReview">Reseña</label>
+          <textarea id="inputReview" rows="3" placeholder="Escribe tu reseña" required></textarea>
+
+          <button type="submit">Enviar Reseña</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Contenedor dinámico para reseñas -->
+    <div id="resenasContainer"></div>
+  </main>
+
+  <!-- Slidebar -->
+  <script src="../js/slidebar.js"></script>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+  <script src="../js/include-footer.js"></script>
+
+  <!-- Reseñas -->
+  <script src="../js/reseñas.js"></script>
+</body>
+</html>
