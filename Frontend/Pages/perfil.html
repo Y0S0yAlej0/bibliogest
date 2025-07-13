@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editar Perfil</title>
+  <link rel="stylesheet" href="../css/perfil.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="perfil-container">
+    <h1>Editar Perfil</h1>
+
+    <form id="perfilForm">
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <div class="input-icon">
+          <input type="text" id="nombre" disabled />
+          <i class="fas fa-pen icono-editar" data-target="nombre"></i>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo:</label>
+        <div class="input-icon">
+          <input type="email" id="correo" disabled />
+          <i class="fas fa-pen icono-editar" data-target="correo"></i>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="numero">Número:</label>
+        <div class="input-icon">
+          <input type="text" id="numero" disabled />
+          <i class="fas fa-pen icono-editar" data-target="numero"></i>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasena">Contraseña:</label>
+        <div class="input-icon">
+          <input type="password" id="contrasena" disabled />
+          <i class="fas fa-pen icono-editar" data-target="contrasena"></i>
+        </div>
+      </div>
+
+      <button type="submit" id="guardarBtn">Guardar Cambios</button>
+    </form>
+  </div>
+
+
+  <script src="../js/perfil.js"></script>
+
+   <!--Integracion de slidebar-->
+<script src="../js/slidebar.js"></script>
+
+
+<!-- Integracion de footer -->
+<div id="footer-container"></div>
+<script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
+
+
+</body>
+</html>

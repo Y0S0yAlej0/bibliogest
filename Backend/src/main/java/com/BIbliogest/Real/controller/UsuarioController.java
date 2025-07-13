@@ -26,7 +26,7 @@ public class UsuarioController {
         }
 
         // Asignar rol USER por defecto
-        usuario.setRol("USER");
+        usuario.setRol("user");
 
         usuarioRepository.save(usuario);
         return ResponseEntity.ok("Usuario registrado con éxito");
@@ -46,5 +46,27 @@ public class UsuarioController {
 
         // Devolver todo el objeto Usuario incluyendo el rol
         return ResponseEntity.ok(usuarioEncontrado.get());
+    }
+
+    // 👇 Método PUT para actualizar un usuario por ID
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+
+        Usuario usuarioExistente = usuarioOptional.get();
+
+        usuarioExistente.setNombre(usuarioActualizado.getNombre());
+        usuarioExistente.setCorreo(usuarioActualizado.getCorreo());
+        usuarioExistente.setNumero(usuarioActualizado.getNumero());
+        usuarioExistente.setContrasena(usuarioActualizado.getContrasena());
+        // El rol no se actualiza desde aquí por seguridad
+
+        usuarioRepository.save(usuarioExistente);
+
+        return ResponseEntity.ok(usuarioExistente);
     }
 }
