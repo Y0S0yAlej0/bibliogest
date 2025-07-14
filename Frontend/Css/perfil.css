@@ -12,27 +12,36 @@ body {
   background-color: #1e1e1e;
   padding: 2rem;
   border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: transform 0.2s ease;
 }
+.perfil-container:hover {
+  transform: translateY(-5px);
+}
+
 
 h1 {
   text-align: center;
-  color: #20b2aa;
+  color: #FFFFFF;
   margin-bottom: 2rem;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;;
+
 }
 
 label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #ccc;
+  color: #00C9B7;
 }
 
 .input-icon {
   position: relative;
+  display: flex;
+  
 }
 
 input {
@@ -64,8 +73,8 @@ input:disabled {
 
 #guardarBtn {
   width: 100%;
-  background-color: #205e5b;
-  color: white;
+  background-color: #00C9B7;
+  color: black;
   border: none;
   padding: 12px;
   border-radius: 10px;
