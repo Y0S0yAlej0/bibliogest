@@ -60,7 +60,6 @@ public class UsuarioController {
         Usuario usuarioExistente = usuarioOptional.get();
 
         usuarioExistente.setNombre(usuarioActualizado.getNombre());
-        usuarioExistente.setCorreo(usuarioActualizado.getCorreo());
         usuarioExistente.setNumero(usuarioActualizado.getNumero());
         usuarioExistente.setContrasena(usuarioActualizado.getContrasena());
         // El rol no se actualiza desde aquí por seguridad

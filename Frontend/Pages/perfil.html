@@ -10,7 +10,7 @@
 <body>
   <div class="perfil-container">
     <h1>Editar Perfil</h1>
-
+    
     <form id="perfilForm">
       <div class="form-group">
         <label for="nombre">Nombre:</label>
@@ -39,7 +39,7 @@
       <div class="form-group">
         <label for="contrasena">Contraseña:</label>
         <div class="input-icon">
-          <input type="password" id="contrasena" disabled />
+          <input type="text" id="contrasena" disabled />
           <i class="fas fa-pen icono-editar" data-target="contrasena"></i>
         </div>
       </div>
@@ -47,7 +47,7 @@
       <button type="submit" id="guardarBtn">Guardar Cambios</button>
     </form>
   </div>
-
+<p id="mensajeCorreo" style="display: none;"></p>
 
   <script src="../js/perfil.js"></script>
 

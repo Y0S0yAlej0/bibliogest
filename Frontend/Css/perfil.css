@@ -78,3 +78,21 @@ input:disabled {
 #guardarBtn:hover {
   background-color: #2d7c78;
 }
+
+#mensajeCorreo {
+  background-color: #ff4d4d;
+  color: rgb(238, 238, 238);
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: bold;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
