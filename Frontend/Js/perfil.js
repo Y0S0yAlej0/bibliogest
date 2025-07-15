@@ -2,8 +2,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario) {
-    alert("⚠️ No hay usuario en sesión.");
-    window.location.href = "login.html";
+    Swal.fire({
+      icon: "warning",
+      title: "Sesión no iniciada",
+      text: "⚠️ No hay usuario en sesión.",
+      background: "#1e1e1e",
+      color: "#fff",
+      confirmButtonColor: "#d33"
+    }).then(() => {
+      window.location.href = "login.html";
+    });
     return;
   }
 
@@ -31,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
       input.focus();
       icono.style.display = "none";
 
-      // Cuando el usuario salga del campo, vuelve a mostrar el ícono
       input.addEventListener("blur", () => {
         input.disabled = true;
         icono.style.display = "inline";
@@ -63,22 +70,41 @@ document.addEventListener("DOMContentLoaded", function () {
         return res.json();
       })
       .then(res => {
-        alert("✅ Perfil actualizado correctamente");
-        localStorage.setItem("usuario", JSON.stringify(res));
-        location.reload();
+        Swal.fire({
+          icon: "success",
+          title: "Perfil actualizado",
+          text: "✅ Los cambios se guardaron correctamente.",
+          background: "#1e1e1e",
+          color: "#fff",
+          confirmButtonColor: "#205e5b"
+        }).then(() => {
+          localStorage.setItem("usuario", JSON.stringify(res));
+          location.reload();
+        });
       })
       .catch(err => {
-        alert("❌ Error: " + err.message);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "❌ " + err.message,
+          background: "#1e1e1e",
+          color: "#fff",
+          confirmButtonColor: "#d33"
+        });
       });
   });
 
-  // Mostrar mensaje debajo del campo correo sin empujar el diseño
-function mostrarMensajeCorreo(mensaje) {
-  const mensajeEl = document.getElementById("mensajeCorreo");
-  mensajeEl.textContent = mensaje;
-  mensajeEl.style.display = "block";
-
-  setTimeout(() => {
-    mensajeEl.style.display = "none";
-  }, 3000);
-} });
+  // Mostrar mensaje flotante cuando se intenta cambiar el correo
+  function mostrarMensajeCorreo(mensaje) {
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2500,
+      background: "#333",
+      color: "#fff",
+      icon: "info",
+      title: mensaje
+    });
+  }
+});

@@ -151,15 +151,25 @@ body {
 .login-card {
   background-color: #1a1a1a;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.05);
   padding: 30px;
   width: 100%;
   max-width: 400px;
   box-sizing: border-box;
   margin: auto;
   margin-bottom: 50px;
+  transition: transform 0.2s ease;
 }
 
+.login-card:hover {
+  transform: translateY(-5px);
+}
+
+.login-card h1 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
 .login-card h2 {
   text-align: center;
   color: #2B7A78;
@@ -174,7 +184,7 @@ label {
   display: block;
   margin-bottom: 6px;
   font-weight: bold;
-  color: #F1F1F1;
+  color: #00C9B7;
 }
 
 input[type="text"],

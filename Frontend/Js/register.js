@@ -19,20 +19,46 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then(response => {
           if (!response.ok) {
-            return response.text().then(msg => { throw new Error(msg); });
+            return response.text().then(msg => {
+              throw new Error(msg);
+            });
           }
           return response.text();
         })
         .then(msg => {
-          alert("✅ " + msg);
-          window.location.href = "login.html";
+          // ✅ Registro exitoso
+          Swal.fire({
+            icon: 'success',
+            title: '¡Registro exitoso!',
+            text: msg,
+            confirmButtonColor: '#205e5b',
+            background: '#1e1e1e',
+            color: '#fff'
+          }).then(() => {
+            window.location.href = "inicio.html";
+          });
         })
         .catch(error => {
-          const msg = document.getElementById("mensaje-error");
-          if (msg) {
-            msg.textContent = "❌ " + error.message;
+          if (error.message.includes("correo ya registrado") || error.message.includes("ya existe")) {
+            // ⚠️ Correo en uso
+            Swal.fire({
+              icon: 'warning',
+              title: 'Correo ya registrado',
+              text: 'Por favor usa otro correo electrónico.',
+              confirmButtonColor: '#f1c40f',
+              background: '#1e1e1e',
+              color: '#fff'
+            });
           } else {
-            alert("❌ " + error.message);
+            // ❌ Error general
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al registrar',
+              text: error.message || "Ocurrió un problema inesperado.",
+              confirmButtonColor: '#e74c3c',
+              background: '#1e1e1e',
+              color: '#fff'
+            });
           }
         });
     });

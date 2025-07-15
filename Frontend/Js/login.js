@@ -17,23 +17,38 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then(res => {
           if (!res.ok) {
-            if (res.status === 401) throw new Error("Contraseña incorrecta");
-            if (res.status === 404) throw new Error("Correo no registrado");
-            throw new Error("Error desconocido");
+            if (res.status === 401) throw new Error("❌ Contraseña incorrecta");
+            if (res.status === 404) throw new Error("❌ Correo no registrado");
+            throw new Error("❌ Error desconocido");
           }
           return res.json();
         })
         .then(usuario => {
-          alert("✅ Bienvenido " + usuario.nombre);
-
           // 🔒 Guardar el usuario en localStorage
           localStorage.setItem("usuario", JSON.stringify(usuario));
 
-          // 🔁 Redirigir al inicio
-          window.location.href = "../Pages/inicio.html";
+          // ✅ Mostrar bienvenida
+          Swal.fire({
+            title: `¡Bienvenido/a, ${usuario.nombre}!`,
+            icon: "success",
+            text: "Has iniciado sesión correctamente.",
+            background: "#1e1e1e",
+            color: "#ffffff",
+            confirmButtonColor: "#205e5b"
+          }).then(() => {
+            window.location.href = "../Pages/inicio.html";
+          });
         })
         .catch(error => {
-          document.getElementById("mensaje-error").textContent = error.message;
+          // ❌ Mostrar error con fondo oscuro
+          Swal.fire({
+            title: "Error",
+            text: error.message,
+            icon: "error",
+            background: "#1e1e1e",
+            color: "#ffffff",
+            confirmButtonColor: "#d33"
+          });
         });
     });
   } else {
