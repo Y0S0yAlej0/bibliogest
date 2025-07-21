@@ -12,6 +12,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
       toggleBtn.addEventListener("click", () => {
         sidebar.classList.toggle("open");
+
+        const submenuToggle = tempDiv.querySelector(".submenu-toggle");
+const submenuContainer = tempDiv.querySelector(".submenu");
+
+if (submenuToggle && submenuContainer) {
+
+const submenuContainer = tempDiv.querySelector(".submenu");
+
+if (submenuToggle && submenuContainer) {
+  submenuToggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.href = "directorio.html";
+    submenuContainer.classList.toggle("open");
+  });
+}
+}
       });
 
       // Verifica si hay un usuario almacenado en localStorage
