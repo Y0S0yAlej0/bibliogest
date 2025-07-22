@@ -12,7 +12,9 @@ public class Libro {
     private String titulo;
     private String autor;
     private String descripcion;
-    private String imagen; // Asegúrate de tener este campo
+    private String imagen;
+    private String genero;
+    private String isbn; // Asegúrate de tener este campo
 
     // Getters y setters
 
@@ -54,5 +56,20 @@ public class Libro {
 
     public void setImagen(String imagen) {
         this.imagen = imagen;
+    }
+
+
+    public String getGenero() {
+        return genero;
+    }
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 }

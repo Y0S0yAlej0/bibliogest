@@ -32,6 +32,8 @@ public class LibroService {
             // Evitar valores nulos o vacíos
             if (libroActualizado.getTitulo() != null) libro.setTitulo(libroActualizado.getTitulo());
             if (libroActualizado.getAutor() != null) libro.setAutor(libroActualizado.getAutor());
+            if (libroActualizado.getGenero() != null) libro.setGenero(libroActualizado.getGenero());
+            if (libroActualizado.getIsbn() != null) libro.setIsbn(libroActualizado.getIsbn());
             if (libroActualizado.getDescripcion() != null) libro.setDescripcion(libroActualizado.getDescripcion());
             if (libroActualizado.getImagen() != null) libro.setImagen(libroActualizado.getImagen());
             return Optional.of(libroRepository.save(libro));
