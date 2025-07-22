@@ -7,29 +7,41 @@
   <link rel="stylesheet" href="../css/directorio.css">
   <link rel="icon" href="../Assets/Icons/favicon.svg" />
 </head>
-<body>
+
 
 
   <!-- Contenido principal -->
   <main class="container">
-<section class="busqueda">
-  <h1>Catálogo de Libros</h1>
-  <input type="text" id="buscar-input" placeholder="Buscar por título o autor">
-</section>
+        <!-- 🔍 Barra de búsqueda -->
+    <section class="busqueda">
+      <h1>Catálogo de Libros</h1>
+      <form id="form-busqueda">
+        <input type="text" id="buscar-input" placeholder="Buscar por título o autor..." />
+        <button type="submit">Buscar</button>
+      </form>
+    </section>
 
  
 
 
     <!-- Aquí se cargarán las tarjetas de libros dinámicamente -->
     <section class="libros"></section>
+        <!-- 🛑 Mensaje cuando no hay resultados -->
+    <div id="mensaje-sin-resultados" class="oculto">
+      <div class="icono">😕</div>
+      <div class="texto">No se encontraron libros con ese término.</div>
+    </div>
   </main>
 
   <!-- Scripts -->
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../js/slidebar.js"></script>
   <div id="footer-container"></div>
   <script src="../js/include-footer.js"></script>
   <script src="../js/catalogo-carga.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</script>
+  <script src="../js/catalogo.js" defer></script>
+
 
 </body>
 </html>

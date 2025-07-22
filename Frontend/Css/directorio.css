@@ -1,115 +1,145 @@
-
+/* ============================== */
+/* 🎨 Estilo general */
 body {
-    background-color: #1A1A1A;
-    color: #F0EDE5;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding-top: 60px;
-  }
+  background-color: #1A1A1A;
+  color: #F0EDE5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding-top: 60px;
+}
 
-
-
-/* Contenedor principal */
 .container {
   max-width: 1000px;
   margin: 30px auto;
   padding: 0 20px;
 }
 
-/* Sección búsqueda */
+/* ============================== */
+/* 🔍 Sección de búsqueda */
 .busqueda h1 {
-  margin-bottom: 15px;
+  font-size: 2.4rem;
+  text-align: center;
+  margin-bottom: 25px;
 }
 
 .busqueda form {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
 }
 
 .busqueda input {
-  flex: 1 1 45%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  flex: 1 1 300px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2C2C2C;
+  color: #F0EDE5;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.busqueda input:focus {
+  box-shadow: 0 0 0 2px #3B9C96;
 }
 
 .busqueda button {
-  padding: 10px 20px;
-  border: none;
-  background-color: ffff;
-  color: black;
+  padding: 12px 25px;
+  background-color: #3B9C96;
+  color: white;
   font-weight: bold;
-  border-radius: 4px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .busqueda button:hover {
-  background-color: #3B9C96;
+  background-color: #2F827B;
 }
 
-/* Sección nuevo libro */
+/* ============================== */
+/* 📘 Formulario de nuevo libro */
 .nuevo-libro {
   margin-bottom: 40px;
+  background-color: #222;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nuevo-libro h2 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.7rem;
+  text-align: center;
 }
 
-.nuevo-libro form {
+.nuevo-libro .campo {
   display: flex;
   flex-direction: column;
+  margin-bottom: 15px;
 }
 
 .nuevo-libro label {
-  margin-top: 10px;
-  font-weight: bold;
+  font-weight: 600;
+  color: #D3D3D3;
+  margin-bottom: 5px;
 }
 
 .nuevo-libro input,
 .nuevo-libro textarea {
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2C2C2C;
+  color: #F0EDE5;
+  resize: vertical;
 }
 
 .nuevo-libro button {
   margin-top: 15px;
-  padding: 10px;
+  padding: 12px;
   background-color: #28a745;
   color: white;
   font-weight: bold;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .nuevo-libro button:hover {
   background-color: #218838;
 }
 
-/* Tarjetas de libros */
+/* ============================== */
+/* 📚 Tarjetas de libros */
 .libros {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
 }
 
 .card {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background-color: #2C2C2C;
+  border: 1px solid #444;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }
 
 .card img {
   width: 100%;
-  height: 400px;
+  height: 380px;
   object-fit: cover;
+  border-bottom: 1px solid #444;
 }
 
 .card .info {
@@ -118,11 +148,102 @@ body {
 
 .card h3 {
   margin: 0 0 10px;
-  font-size: 1.2em;
+  font-size: 1.3rem;
+  color: #F0EDE5;
 }
 
 .card p {
-  margin: 5px 0;
-  font-size: 0.95em;
+  margin: 6px 0;
+  font-size: 0.95rem;
+  color: #CCCCCC;
 }
 
+/* ============================== */
+/* ✏️ Botón Editar */
+.boton-editar {
+  background-color: #3B9C96;
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  margin: 5px 5px 0 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(59, 156, 150, 0.3);
+}
+
+.boton-editar:hover {
+  background-color: #31807C;
+  transform: scale(1.05);
+}
+
+/* ============================== */
+/* 🗑️ Botón Eliminar */
+.boton-eliminar {
+  background-color: #C0392B;
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  margin: 5px 0 0 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+}
+
+.boton-eliminar:hover {
+  background-color: #A93226;
+  transform: scale(1.05);
+}
+
+/* ============================== */
+/* 🛑 Mensaje de sin resultados */
+#mensaje-sin-resultados {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #222222, #1a1a1a);
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  padding: 40px 30px;
+  margin: 40px auto;
+  max-width: 600px;
+  color: #F0EDE5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  text-align: center;
+}
+
+#mensaje-sin-resultados.mostrar {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#mensaje-sin-resultados .icono {
+  font-size: 4rem;
+  animation: rebote 1.2s infinite;
+  margin-bottom: 15px;
+}
+
+#mensaje-sin-resultados .texto {
+  font-size: 1.2rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #F0EDE5;
+}
+
+/* Animación rebote */
+@keyframes rebote {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}

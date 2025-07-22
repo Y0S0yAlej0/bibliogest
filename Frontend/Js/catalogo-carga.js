@@ -1,15 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
   const contenedorLibros = document.querySelector(".libros");
   const inputBuscar = document.getElementById("buscar-input");
+  const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
+
+  console.log("📦 Iniciando script...");
+  if (!contenedorLibros) console.warn("⚠️ No se encontró el contenedor de libros (.libros)");
+  if (!inputBuscar) console.warn("⚠️ No se encontró el input de búsqueda (#buscar-input)");
+  if (!mensajeSinResultados) console.warn("⚠️ No se encontró el mensaje de sin resultados (#mensaje-sin-resultados)");
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const rolUsuario = usuario?.rol?.toUpperCase() || ""; // ✅ obtiene correctamente el rol
+  const rolUsuario = usuario?.rol?.toUpperCase() || "";
+  console.log("🧑 Rol del usuario:", rolUsuario);
 
   async function cargarLibros() {
     if (!contenedorLibros) return;
     try {
+      console.log("🔄 Cargando libros desde la API...");
       const response = await fetch("http://localhost:8080/api/libros");
       const libros = await response.json();
+      console.log("📚 Libros recibidos:", libros.length);
       contenedorLibros.innerHTML = "";
 
       libros.forEach(libro => {
@@ -26,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
             ${
               rolUsuario === "ADMIN"
                 ? `<div class="acciones">
-                     <button class="btn-editar" data-id="${libro.id}">✏️ Editar</button>
-                     <button class="btn-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+                     <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
+                     <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
                    </div>`
                 : ""
             }
@@ -37,20 +46,28 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (rolUsuario === "ADMIN") {
+        console.log("🛠️ Usuario es admin. Agregando eventos...");
         agregarEventos();
       }
+
+      if (mensajeSinResultados) {
+        mensajeSinResultados.classList.remove("mostrar");
+      }
+
     } catch (error) {
       console.error("❌ Error al cargar libros:", error);
     }
   }
 
   function agregarEventos() {
-    const botonesEliminar = document.querySelectorAll(".btn-eliminar");
-    const botonesEditar = document.querySelectorAll(".btn-editar");
+    const botonesEliminar = document.querySelectorAll(".boton-eliminar");
+    const botonesEditar = document.querySelectorAll(".boton-editar");
 
     botonesEliminar.forEach(boton => {
       boton.addEventListener("click", async function () {
         const id = this.getAttribute("data-id");
+        console.log("🗑️ Clic en eliminar libro con ID:", id);
+
         const confirmacion = await Swal.fire({
           title: "¿Estás seguro?",
           text: "Esta acción eliminará el libro.",
@@ -90,6 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const isbn = libroCard.querySelector("p:nth-child(4)").textContent.replace("ISBN:", "").trim();
         const descripcion = libroCard.querySelector("p:nth-child(5)").textContent.trim();
         const imagen = libroCard.querySelector("img").getAttribute("src");
+
+        console.log("✏️ Clic en editar libro:", id, titulo);
 
         Swal.fire({
           title: "Editar Libro",
@@ -141,17 +160,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // 🔍 BÚSQUEDA con logs de depuración
   if (inputBuscar) {
     inputBuscar.addEventListener("input", function () {
       const filtro = inputBuscar.value.toLowerCase();
       const tarjetas = contenedorLibros.querySelectorAll(".card");
+      let coincidencias = 0;
+
+      console.log("🔍 Texto buscado:", filtro);
+      console.log("📦 Total de libros cargados:", tarjetas.length);
 
       tarjetas.forEach(card => {
         const titulo = card.querySelector("h3").textContent.toLowerCase();
         const autorTexto = card.querySelector("p")?.textContent.toLowerCase() || "";
         const coincide = titulo.includes(filtro) || autorTexto.includes(filtro);
         card.style.display = coincide ? "block" : "none";
+        if (coincide) coincidencias++;
       });
+
+      console.log("✅ Coincidencias encontradas:", coincidencias);
+
+      if (mensajeSinResultados) {
+        if (coincidencias === 0) {
+          mensajeSinResultados.classList.add("mostrar");
+          console.log("🚨 Mostrando mensaje de sin resultados");
+        } else {
+          mensajeSinResultados.classList.remove("mostrar");
+          console.log("✅ Ocultando mensaje de sin resultados");
+        }
+      } else {
+        console.warn("⚠️ No se encontró el elemento con id 'mensaje-sin-resultados'");
+      }
     });
   }
 
