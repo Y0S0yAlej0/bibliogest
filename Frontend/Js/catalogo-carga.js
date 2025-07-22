@@ -2,23 +2,75 @@ document.addEventListener("DOMContentLoaded", function () {
   const contenedorLibros = document.querySelector(".libros");
   const inputBuscar = document.getElementById("buscar-input");
   const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
+  const btnAgregar = document.getElementById("btn-agregar-libro");
+  const modalAgregar = document.getElementById("modal-agregar-libro");
+  const cerrarModal = document.querySelector(".cerrar-modal");
+  const formNuevoLibro = document.getElementById("form-nuevo-libro");
 
-  console.log("📦 Iniciando script...");
   if (!contenedorLibros) console.warn("⚠️ No se encontró el contenedor de libros (.libros)");
   if (!inputBuscar) console.warn("⚠️ No se encontró el input de búsqueda (#buscar-input)");
   if (!mensajeSinResultados) console.warn("⚠️ No se encontró el mensaje de sin resultados (#mensaje-sin-resultados)");
 
+  if (!btnAgregar || !modalAgregar || !cerrarModal || !formNuevoLibro) {
+    console.warn("❗ Uno o más elementos del modal no existen en el DOM");
+  }
+
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const rolUsuario = usuario?.rol?.toUpperCase() || "";
-  console.log("🧑 Rol del usuario:", rolUsuario);
+
+  // 🔄 Modal: abrir/cerrar
+  if (btnAgregar) {
+    btnAgregar.addEventListener("click", async () => {
+      const { value: formValues } = await Swal.fire({
+        title: "Agregar nuevo libro",
+        html:
+          `<input id="swal-input-titulo" class="swal2-input" placeholder="Título">` +
+          `<input id="swal-input-autor" class="swal2-input" placeholder="Autor">` +
+          `<input id="swal-input-genero" class="swal2-input" placeholder="Género">` +
+          `<input id="swal-input-isbn" class="swal2-input" placeholder="ISBN">` +
+          `<textarea id="swal-input-descripcion" class="swal2-textarea" placeholder="Descripción"></textarea>` +
+          `<input id="swal-input-imagen" class="swal2-input" placeholder="URL de la imagen">`,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+        preConfirm: () => {
+          return {
+            titulo: document.getElementById("swal-input-titulo").value.trim(),
+            autor: document.getElementById("swal-input-autor").value.trim(),
+            genero: document.getElementById("swal-input-genero").value.trim(),
+            isbn: document.getElementById("swal-input-isbn").value.trim(),
+            descripcion: document.getElementById("swal-input-descripcion").value.trim(),
+            imagen: document.getElementById("swal-input-imagen").value.trim(),
+          };
+        },
+      });
+
+      if (formValues) {
+        try {
+          const response = await fetch("http://localhost:8080/api/libros", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formValues),
+          });
+
+          if (!response.ok) throw new Error("No se pudo agregar el libro");
+
+          Swal.fire("✅ Libro agregado", "", "success");
+          cargarLibros();
+        } catch (error) {
+          Swal.fire("❌ Error", error.message, "error");
+        }
+      }
+    });
+  }
+
 
   async function cargarLibros() {
     if (!contenedorLibros) return;
     try {
-      console.log("🔄 Cargando libros desde la API...");
       const response = await fetch("http://localhost:8080/api/libros");
       const libros = await response.json();
-      console.log("📚 Libros recibidos:", libros.length);
       contenedorLibros.innerHTML = "";
 
       libros.forEach(libro => {
@@ -45,14 +97,9 @@ document.addEventListener("DOMContentLoaded", function () {
         contenedorLibros.appendChild(card);
       });
 
-      if (rolUsuario === "ADMIN") {
-        console.log("🛠️ Usuario es admin. Agregando eventos...");
-        agregarEventos();
-      }
+      if (rolUsuario === "ADMIN") agregarEventos();
 
-      if (mensajeSinResultados) {
-        mensajeSinResultados.classList.remove("mostrar");
-      }
+      mensajeSinResultados?.classList.remove("mostrar");
 
     } catch (error) {
       console.error("❌ Error al cargar libros:", error);
@@ -66,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
     botonesEliminar.forEach(boton => {
       boton.addEventListener("click", async function () {
         const id = this.getAttribute("data-id");
-        console.log("🗑️ Clic en eliminar libro con ID:", id);
 
         const confirmacion = await Swal.fire({
           title: "¿Estás seguro?",
@@ -108,8 +154,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const descripcion = libroCard.querySelector("p:nth-child(5)").textContent.trim();
         const imagen = libroCard.querySelector("img").getAttribute("src");
 
-        console.log("✏️ Clic en editar libro:", id, titulo);
-
         Swal.fire({
           title: "Editar Libro",
           html: `
@@ -124,16 +168,14 @@ document.addEventListener("DOMContentLoaded", function () {
           showCancelButton: true,
           confirmButtonText: "Guardar cambios",
           cancelButtonText: "Cancelar",
-          preConfirm: () => {
-            return {
-              titulo: document.getElementById("swal-titulo").value,
-              autor: document.getElementById("swal-autor").value,
-              genero: document.getElementById("swal-genero").value,
-              isbn: document.getElementById("swal-isbn").value,
-              imagen: document.getElementById("swal-imagen").value,
-              descripcion: document.getElementById("swal-descripcion").value
-            };
-          }
+          preConfirm: () => ({
+            titulo: document.getElementById("swal-titulo").value,
+            autor: document.getElementById("swal-autor").value,
+            genero: document.getElementById("swal-genero").value,
+            isbn: document.getElementById("swal-isbn").value,
+            imagen: document.getElementById("swal-imagen").value,
+            descripcion: document.getElementById("swal-descripcion").value
+          })
         }).then(async (resultado) => {
           if (resultado.isConfirmed) {
             const datosActualizados = resultado.value;
@@ -160,15 +202,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 🔍 BÚSQUEDA con logs de depuración
+  // 🔍 Búsqueda
   if (inputBuscar) {
     inputBuscar.addEventListener("input", function () {
       const filtro = inputBuscar.value.toLowerCase();
       const tarjetas = contenedorLibros.querySelectorAll(".card");
       let coincidencias = 0;
-
-      console.log("🔍 Texto buscado:", filtro);
-      console.log("📦 Total de libros cargados:", tarjetas.length);
 
       tarjetas.forEach(card => {
         const titulo = card.querySelector("h3").textContent.toLowerCase();
@@ -178,21 +217,16 @@ document.addEventListener("DOMContentLoaded", function () {
         if (coincide) coincidencias++;
       });
 
-      console.log("✅ Coincidencias encontradas:", coincidencias);
-
       if (mensajeSinResultados) {
         if (coincidencias === 0) {
           mensajeSinResultados.classList.add("mostrar");
-          console.log("🚨 Mostrando mensaje de sin resultados");
         } else {
           mensajeSinResultados.classList.remove("mostrar");
-          console.log("✅ Ocultando mensaje de sin resultados");
         }
-      } else {
-        console.warn("⚠️ No se encontró el elemento con id 'mensaje-sin-resultados'");
       }
     });
   }
 
+  // ✅ Finalmente: carga inicial
   cargarLibros();
 });

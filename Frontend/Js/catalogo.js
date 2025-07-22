@@ -1,39 +1,45 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const formLibro = document.getElementById("form-libro");
-  const mensaje = document.getElementById("mensaje");
-  let modoEditar = false;
-  let idLibroEditando = null;
+  const modal = document.getElementById("modal-agregar-libro");
+  const btnAbrirModal = document.getElementById("btn-agregar-libro");
+  const btnCerrarModal = document.querySelector(".cerrar-modal");
+  const formNuevoLibro = document.getElementById("form-nuevo-libro");
 
-  formLibro.addEventListener("submit", async function (e) {
-    e.preventDefault();
+  // Mostrar modal
+  if (btnAbrirModal && modal) {
+    btnAbrirModal.addEventListener("click", () => {
+      modal.style.display = "block";
+    });
+  }
 
-    const nuevoLibro = {
-      titulo: formLibro.titulo.value,
-      autor: formLibro.autor.value,
-      descripcion: formLibro.descripcion.value,
-      genero: formLibro.genero.value,
-      isbn: formLibro.isbn.value,
-      imagen: formLibro.imagen.value
-    };
+  // Cerrar modal
+  if (btnCerrarModal && modal) {
+    btnCerrarModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+  }
 
-    try {
-      if (modoEditar) {
-        // MODO EDITAR: actualiza libro existente
-        const response = await fetch(`http://localhost:8080/api/libros/${idLibroEditando}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(nuevoLibro),
-        });
+  // Cerrar modal si se hace clic fuera del contenido
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
 
-        if (!response.ok) throw new Error("No se pudo actualizar el libro");
+  // Enviar formulario del modal
+  if (formNuevoLibro) {
+    formNuevoLibro.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-        mensaje.textContent = "📘 Libro actualizado exitosamente.";
-        modoEditar = false;
-        idLibroEditando = null;
-      } else {
-        // MODO CREAR: agrega nuevo libro
+      const nuevoLibro = {
+        titulo: formNuevoLibro.titulo.value,
+        autor: formNuevoLibro.autor.value,
+        descripcion: formNuevoLibro.descripcion.value,
+        genero: formNuevoLibro.genero.value,
+        isbn: formNuevoLibro.isbn.value,
+        imagen: formNuevoLibro.imagen.value,
+      };
+
+      try {
         const response = await fetch("http://localhost:8080/api/libros", {
           method: "POST",
           headers: {
@@ -44,55 +50,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!response.ok) throw new Error("No se pudo agregar el libro");
 
-        mensaje.textContent = "📚 Libro agregado exitosamente.";
+        Swal.fire("📚 ¡Libro agregado!", "Se añadió correctamente a la base de datos.", "success");
+
+        formNuevoLibro.reset();
+        modal.style.display = "none";
+
+        if (typeof cargarLibros === "function") {
+          cargarLibros();
+        }
+      } catch (error) {
+        console.error(error);
+        Swal.fire("❌ Error", error.message, "error");
       }
-
-      formLibro.reset();
-      cargarLibros();
-    } catch (error) {
-      mensaje.textContent = "❌ Error: " + error.message;
-    }
-  });
-
-  // Función para eliminar un libro
-  window.eliminarLibro = async function (id) {
-    const confirmacion = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esta acción eliminará el libro.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
     });
-
-    if (!confirmacion.isConfirmed) return;
-
-    try {
-      const response = await fetch(`http://localhost:8080/api/libros/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("No se pudo eliminar el libro");
-
-      Swal.fire("Eliminado", "El libro fue eliminado.", "success");
-      cargarLibros();
-    } catch (error) {
-      Swal.fire("Error", "No se pudo eliminar el libro.", "error");
-    }
-  };
-
-  // Función para preparar edición
-  window.editarLibro = function (libro) {
-    formLibro.titulo.value = libro.titulo;
-    formLibro.autor.value = libro.autor;
-    formLibro.descripcion.value = libro.descripcion;
-    formLibro.genero.value = libro.genero;
-    formLibro.isbn.value = libro.isbn;
-    formLibro.imagen.value = libro.imagen;
-
-    modoEditar = true;
-    idLibroEditando = libro.id;
-    mensaje.textContent = "✏️ Editando libro...";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }
 });

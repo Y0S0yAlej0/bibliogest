@@ -1,11 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo</title>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-contenido {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      position: relative;
+    }
+
+    .cerrar-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    #btn-agregar-libro {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    
+
+  <!-- Botón flotante -->
+  <button id="btn-agregar-libro">＋</button>
+
+  <!-- Modal para agregar libro -->
+  <div id="modal-agregar-libro" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar-modal">&times;</span>
+      <form id="form-nuevo-libro">
+        <input type="text" name="titulo" placeholder="Título" required><br><br>
+        <input type="text" name="autor" placeholder="Autor" required><br><br>
+        <input type="text" name="descripcion" placeholder="Descripción" required><br><br>
+        <input type="text" name="genero" placeholder="Género" required><br><br>
+        <input type="text" name="isbn" placeholder="ISBN" required><br><br>
+        <input type="text" name="imagen" placeholder="URL Imagen" required><br><br>
+        <button type="submit">Guardar libro</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS (va al final para que cargue después del DOM) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnAgregar = document.getElementById("btn-agregar-libro");
+      const modalAgregar = document.getElementById("modal-agregar-libro");
+      const cerrarModal = document.querySelector(".cerrar-modal");
+      const formNuevoLibro = document.getElementById("form-nuevo-libro");
+
+      btnAgregar.addEventListener("click", () => {
+        modalAgregar.style.display = "flex";
+      });
+
+      cerrarModal.addEventListener("click", () => {
+        modalAgregar.style.display = "none";
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === modalAgregar) {
+          modalAgregar.style.display = "none";
+        }
+      });
+
+      formNuevoLibro.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(formNuevoLibro);
+        const nuevoLibro = Object.fromEntries(formData.entries());
+
+        try {
+          const response = await fetch("http://localhost:8080/api/libros", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevoLibro),
+          });
+
+          if (!response.ok) throw new Error("No se pudo agregar el libro");
+
+          alert("✅ Libro agregado");
+          formNuevoLibro.reset();
+          modalAgregar.style.display = "none";
+        } catch (error) {
+          alert("❌ Error al agregar: " + error.message);
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
