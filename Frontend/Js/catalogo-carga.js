@@ -3,17 +3,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const inputBuscar = document.getElementById("buscar-input");
   const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
   const btnAgregar = document.getElementById("btn-agregar-libro");
-  const modalAgregar = document.getElementById("modal-agregar-libro");
-  const cerrarModal = document.querySelector(".cerrar-modal");
-  const formNuevoLibro = document.getElementById("form-nuevo-libro");
-
+ 
   if (!contenedorLibros) console.warn("⚠️ No se encontró el contenedor de libros (.libros)");
   if (!inputBuscar) console.warn("⚠️ No se encontró el input de búsqueda (#buscar-input)");
   if (!mensajeSinResultados) console.warn("⚠️ No se encontró el mensaje de sin resultados (#mensaje-sin-resultados)");
 
-  if (!btnAgregar || !modalAgregar || !cerrarModal || !formNuevoLibro) {
-    console.warn("❗ Uno o más elementos del modal no existen en el DOM");
-  }
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const rolUsuario = usuario?.rol?.toUpperCase() || "";
