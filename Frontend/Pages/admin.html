@@ -1,58 +1,151 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Panel de Administración</title>
   <link rel="stylesheet" href="../css/directorio.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 2em;
+      color: #333;
+    }
+
+    h1, h2 {
+      color: #2c3e50;
+      margin-bottom: 0.5em;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 1.5em;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin-bottom: 2em;
+    }
+
+    label {
+      display: block;
+      margin-top: 1em;
+      font-weight: 600;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.7em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 0.3em;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 1.5em;
+      padding: 0.7em 1.5em;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .contenedor-libros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5em;
+    }
+
+    .libro {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1em;
+      width: 250px;
+      position: relative;
+    }
+
+    .libro img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .libro h3 {
+      margin: 0.8em 0 0.3em;
+      font-size: 1.1em;
+      color: #34495e;
+    }
+
+    .libro p {
+      margin: 0.2em 0;
+      font-size: 0.95em;
+      color: #555;
+    }
+
+    .libro button {
+      margin-top: 0.5em;
+      margin-right: 0.5em;
+      font-size: 0.85em;
+      padding: 0.5em 1em;
+    }
+
+    #mensaje {
+      margin-top: 1em;
+    }
+  </style>
 </head>
 <body>
   <h1>Bienvenido al Panel de Administrador</h1>
-  <p>Aquí puedes gestionar libros, usuarios, y más funciones futuras.</p>
-
-
+  <p>Aquí puedes gestionar libros, usuarios y más funciones futuras.</p>
 
   <section class="nuevo-libro">
-  <h2>Agregar Nuevo Libro</h2>
-  <form id="form-libro">
-    <label for="titulo">Título</label>
-    <input type="text" name="titulo" id="titulo" required>
+    <h2>Agregar Nuevo Libro</h2>
+    <form id="form-libro">
+      <label for="titulo">Título</label>
+      <input type="text" name="titulo" id="titulo" required>
 
-    <label for="autor">Autor</label>
-    <input type="text" name="autor" id="autor" required>
+      <label for="autor">Autor</label>
+      <input type="text" name="autor" id="autor" required>
 
-    <label for="descripcion">Descripción</label>
-    <textarea name="descripcion" id="descripcion" rows="3" required></textarea>
+      <label for="descripcion">Descripción</label>
+      <textarea name="descripcion" id="descripcion" rows="3" required></textarea>
 
-    <label for="genero">Género</label>
-    <input type="text" name="genero" id="genero" required>
+      <label for="genero">Género</label>
+      <input type="text" name="genero" id="genero" required>
 
-    <label for="isbn">ISBN</label>
-    <input type="text" name="isbn" id="isbn" required>
+      <label for="isbn">ISBN</label>
+      <input type="text" name="isbn" id="isbn" required>
 
-    <label for="imagen">URL de la Imagen de Portada</label>
-    <input type="url" name="imagen" id="imagen" required>
+      <label for="imagen">URL de la Imagen de Portada</label>
+      <input type="url" name="imagen" id="imagen" required>
 
-    <button type="submit">Agregar Libro</button>
-  </form>
+      <button type="submit">Agregar Libro</button>
+    </form>
 
-  <div id="mensaje"></div>
-</section>
+    <div id="mensaje"></div>
+  </section>
 
+  <section>
+    <h2>Libros Agregados</h2>
+<div class="libros"></div>
+      <!-- Aquí se cargan los libros dinámicamente con JS -->
+    </div>
+  </section>
 
-
-    <section class="libros"></section>
-
-                                           <!--Integraciones con js-->
-
- <!--Integracion de slidebar-->
-<script src="../js/slidebar.js"></script>
-
-
-<!-- Integracion de footer -->
-<div id="footer-container"></div>
-<script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
-
-<script src="../js/catalogo-carga.js"></script> <!-- también sube un nivel -->
-<script src="../js/catalogo-create.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/slidebar.js"></script>
+  <div id="footer-container"></div>
+  <script src="../js/include-footer.js"></script>
+  <script src="../js/catalogo-carga.js" defer></script>
 </body>
 </html>

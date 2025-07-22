@@ -235,6 +235,37 @@ input::placeholder {
 .submit-btn:hover {
   background-color: #205e5b;
 }
+.btn {
+  position: relative;
+  display: inline-block;
+  color: #6d6d6d;
+  text-decoration: none;
+  font-size: 15px;
+  padding: 4px 0;
+  transition: color 0.3s;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #E4B343;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease-in-out;
+}
+
+.btn:hover {
+color: #E4B343;
+}
+
+.btn:hover::after {
+  transform: scaleX(1);
+}
+
 
 /* Alertas opcionales */
 .alert {

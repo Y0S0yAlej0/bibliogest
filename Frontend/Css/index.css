@@ -64,25 +64,42 @@ a{
       margin-bottom: 30px;
     }
 
-    .buttons {
-      display: flex;
-      gap: 20px;
-    }
+.botonera {
+  display: flex;
+  gap: 20px; /* espacio entre los botones */
+  padding: 10px 0;
+}
 
-    .btn {
-      background-color: #fefefe24;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      border-radius: 8px;
-      color: #fff;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+.btn {
+  position: relative;
+  display: inline-block;
+  color: #c0c0c0;
+  text-decoration: none;
+  font-size: 25px;
+  padding: 4px 0;
+  transition: color 0.3s;
+}
 
-    .btn:hover {
-      background-color: #0091a3;
-    }
+.btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #00c3ff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease-in-out;
+}
+
+.btn:hover {
+  color: #00c3ff;
+}
+
+.btn:hover::after {
+  transform: scaleX(1);
+}
 
     .right img {
       max-width: 400px;
