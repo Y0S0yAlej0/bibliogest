@@ -1,14 +1,12 @@
-# Usa la imagen de Java 17
-FROM eclipse-temurin:17-jdk
-
-# Establece el directorio de trabajo dentro del contenedor
+# Etapa 1: construir el jar con Maven
+FROM maven:3.9.6-eclipse-temurin-17 as builder
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copia el .jar generado por Maven al contenedor
-COPY target/*.jar app.jar
-
-# Expone el puerto (Render usará automáticamente PORT)
+# Etapa 2: usar una imagen liviana para correr el jar
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Comando para ejecutar la aplicación
 CMD ["java", "-jar", "app.jar"]
