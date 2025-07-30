@@ -4,7 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Verifica que hay un usuario logueado
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   if (!usuario || !usuario.id) {
-    alert("Debes iniciar sesión para escribir una reseña.");
+    Swal.fire({
+      icon: "warning",
+      title: "Acceso denegado",
+      text: "Debes iniciar sesión para escribir una reseña.",
+      background: "#1e1e1e",
+      color: "#fff",
+      confirmButtonColor: "#3085d6"
+    });
     return;
   }
 
@@ -16,7 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const contenido = document.getElementById("inputReview").value;
 
       if (!contenido || !calificacion) {
-        alert("Por favor, completa todos los campos.");
+        Swal.fire({
+          icon: "error",
+          title: "Campos incompletos",
+          text: "Por favor, completa todos los campos.",
+          background: "#1e1e1e",
+          color: "#fff",
+          confirmButtonColor: "#d33"
+        });
         return;
       }
 
@@ -27,11 +41,27 @@ document.addEventListener("DOMContentLoaded", () => {
       })
         .then(res => res.json())
         .then(data => {
-          alert("✅ Reseña enviada");
+          Swal.fire({
+            icon: "success",
+            title: "¡Reseña enviada!",
+            text: "Gracias por compartir tu opinión.",
+            background: "#1e1e1e",
+            color: "#fff",
+            confirmButtonColor: "#00b894"
+          });
           form.reset();
           cargarResenas(); // recargar reseñas
         })
-        .catch(err => console.error("Error al enviar la reseña:", err));
+        .catch(err => {
+          console.error("Error al enviar la reseña:", err);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se pudo enviar la reseña.",
+            background: "#1e1e1e",
+            color: "#fff"
+          });
+        });
     });
   } else {
     console.warn("Formulario no encontrado");
