@@ -112,6 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
           title: "¿Estás seguro?",
           text: "Esta acción eliminará el libro.",
           icon: "warning",
+          background: "#1e1e1e",
+          color: "#f5f5f5",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
@@ -148,50 +150,61 @@ document.addEventListener("DOMContentLoaded", function () {
         const descripcion = libroCard.querySelector("p:nth-child(5)").textContent.trim();
         const imagen = libroCard.querySelector("img").getAttribute("src");
 
-        Swal.fire({
-          title: "Editar Libro",
-          html: `
-            <input id="swal-titulo" class="swal2-input" placeholder="Título" value="${titulo}">
-            <input id="swal-autor" class="swal2-input" placeholder="Autor" value="${autor}">
-            <input id="swal-genero" class="swal2-input" placeholder="Género" value="${genero}">
-            <input id="swal-isbn" class="swal2-input" placeholder="ISBN" value="${isbn}">
-            <input id="swal-imagen" class="swal2-input" placeholder="URL Imagen" value="${imagen}">
-            <textarea id="swal-descripcion" class="swal2-textarea" placeholder="Descripción">${descripcion}</textarea>
-          `,
-          focusConfirm: false,
-          showCancelButton: true,
-          confirmButtonText: "Guardar cambios",
-          cancelButtonText: "Cancelar",
-          preConfirm: () => ({
-            titulo: document.getElementById("swal-titulo").value,
-            autor: document.getElementById("swal-autor").value,
-            genero: document.getElementById("swal-genero").value,
-            isbn: document.getElementById("swal-isbn").value,
-            imagen: document.getElementById("swal-imagen").value,
-            descripcion: document.getElementById("swal-descripcion").value
-          })
-        }).then(async (resultado) => {
-          if (resultado.isConfirmed) {
-            const datosActualizados = resultado.value;
-            try {
-              const response = await fetch(`http://localhost:8080/api/libros/${id}`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(datosActualizados)
-              });
+ Swal.fire({
+  title: "Editar Libro",
+  html: `
+    <input id="swal-titulo" class="swal2-input" placeholder="Título" value="${titulo}">
+    <input id="swal-autor" class="swal2-input" placeholder="Autor" value="${autor}">
+    <input id="swal-genero" class="swal2-input" placeholder="Género" value="${genero}">
+    <input id="swal-isbn" class="swal2-input" placeholder="ISBN" value="${isbn}">
+    <input id="swal-imagen" class="swal2-input" placeholder="URL Imagen" value="${imagen}">
+    <textarea id="swal-descripcion" class="swal2-textarea" placeholder="Descripción">${descripcion}</textarea>
+  `,
+  focusConfirm: false,
+  showCancelButton: true,
+  confirmButtonText: "Guardar cambios",
+  cancelButtonText: "Cancelar",
+  background: "#1e1e1e",
+  color: "#f5f5f5",
+  customClass: {
+    popup: "swal-dark",
+    title: "swal-dark-title",
+    confirmButton: "swal-dark-btn"
+  },
+  preConfirm: () => {
+    return {
+      titulo: document.getElementById("swal-titulo").value,
+      autor: document.getElementById("swal-autor").value,
+      genero: document.getElementById("swal-genero").value,
+      isbn: document.getElementById("swal-isbn").value,
+      imagen: document.getElementById("swal-imagen").value,
+      descripcion: document.getElementById("swal-descripcion").value
+    };
+  }
+}).then(async (resultado) => {
+  if (resultado.isConfirmed) {
+    const datosActualizados = resultado.value; // 🔥 ahora sí trae los inputs
+    try {
+      const response = await fetch(`http://localhost:8080/api/libros/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datosActualizados)
+      });
 
-              if (!response.ok) throw new Error("Error al actualizar el libro");
+      if (!response.ok) throw new Error("Error al actualizar el libro");
 
-              Swal.fire("Actualizado", "El libro fue actualizado exitosamente.", "success");
-              cargarLibros();
-            } catch (error) {
-              console.error(error);
-              Swal.fire("Error", "No se pudo actualizar el libro.", "error");
-            }
-          }
-        });
+      Swal.fire("Actualizado", "El libro fue actualizado exitosamente.", "success");
+      cargarLibros();
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "No se pudo actualizar el libro.", "error");
+    }
+  }
+});
+
+
       });
     });
   }
