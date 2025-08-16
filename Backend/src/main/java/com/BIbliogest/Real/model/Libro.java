@@ -14,7 +14,13 @@ public class Libro {
     private String descripcion;
     private String imagen;
     private String genero;
-    private String isbn; // Asegúrate de tener este campo
+    private String isbn;
+
+    // Nuevo: cantidad de ejemplares disponibles
+    private int cantidad;
+
+    // Nuevo: estado del libro (disponible, prestado, agotado)
+    private String estado = "disponible";
 
     // Getters y setters
 
@@ -58,10 +64,10 @@ public class Libro {
         this.imagen = imagen;
     }
 
-
     public String getGenero() {
         return genero;
     }
+
     public void setGenero(String genero) {
         this.genero = genero;
     }
@@ -69,7 +75,29 @@ public class Libro {
     public String getIsbn() {
         return isbn;
     }
+
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+        if (cantidad == 0) {
+            this.estado = "agotado";
+        } else {
+            this.estado = "disponible";
+        }
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }
