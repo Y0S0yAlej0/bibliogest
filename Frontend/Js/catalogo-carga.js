@@ -221,6 +221,81 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  async function cargarLibros() {
+  if (!contenedorLibros) return;
+  try {
+    const response = await fetch("http://localhost:8080/api/libros");
+    const libros = await response.json();
+    contenedorLibros.innerHTML = "";
+
+    libros.forEach(libro => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+
+      card.innerHTML = `
+        <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
+        <div class="info">
+          <h3>${libro.titulo}</h3>
+          <p><strong>Autor:</strong> ${libro.autor}</p>
+          <p><strong>Género:</strong> ${libro.genero}</p>
+          <p><strong>ISBN:</strong> ${libro.isbn}</p>
+          <p>${libro.descripcion}</p>
+          ${
+            rolUsuario === "ADMIN"
+              ? `<div class="acciones">
+                   <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
+                   <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+                 </div>`
+              : ""
+          }
+        </div>
+      `;
+
+      // 👇 Evento de click en la tarjeta (excepto botones admin)
+      card.addEventListener("click", (e) => {
+        // Evita que se active al dar clic en los botones de editar/eliminar
+        if (e.target.closest(".acciones")) return;
+  Swal.fire({
+    title: libro.titulo,
+    html: `
+      <div class="modal-libro">
+        <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" 
+             alt="Portada de ${libro.titulo}" 
+             class="modal-portada">
+        <div class="modal-info">
+          <p><strong>Autor:</strong> ${libro.autor}</p>
+          <p><strong>Género:</strong> ${libro.genero}</p>
+          <p><strong>ISBN:</strong> ${libro.isbn}</p>
+          <p class="modal-descripcion">${libro.descripcion}</p>
+        </div>
+      </div>
+    `,
+    showCloseButton: true,
+    confirmButtonText: "Cerrar",
+    width: "600px",
+    background: "#1e1e1e",   // Fondo oscuro
+    color: "#f5f5f5",        // Texto claro
+    customClass: {
+      popup: "swal-dark",
+      title: "swal-dark-title",
+      confirmButton: "swal-dark-btn"
+    }
+  });
+});
+
+      contenedorLibros.appendChild(card);
+    });
+
+    if (rolUsuario === "ADMIN") agregarEventos();
+
+    mensajeSinResultados?.classList.remove("mostrar");
+
+  } catch (error) {
+    console.error("❌ Error al cargar libros:", error);
+  }
+}
+
+
   // ✅ Finalmente: carga inicial
   cargarLibros();
 });
