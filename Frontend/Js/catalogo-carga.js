@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+  // Recuperar usuario logueado desde localStorage
+
+
+
   const contenedorLibros = document.querySelector(".libros");
   const inputBuscar = document.getElementById("buscar-input");
   const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
@@ -11,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const rolUsuario = usuario?.rol?.toUpperCase() || "";
+  const usuarioId = usuario ? usuario.id : null;
 
   // 🔄 Modal: abrir/cerrar
   if (btnAgregar) {
@@ -60,49 +66,92 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  async function cargarLibros() {
-    if (!contenedorLibros) return;
-    try {
-      const response = await fetch("http://localhost:8080/api/libros");
-      const libros = await response.json();
-      contenedorLibros.innerHTML = "";
+ async function cargarLibros() {
+  if (!contenedorLibros) return;
+  try {
+    const response = await fetch("http://localhost:8080/api/libros");
+    const libros = await response.json();
+    contenedorLibros.innerHTML = "";
 
-      libros.forEach(libro => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.innerHTML = `
-          <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
-          <div class="info">
-            <h3>${libro.titulo}</h3>
-            <p><strong>Autor:</strong> ${libro.autor}</p>
-            <p><strong>Género:</strong> ${libro.genero}</p>
-            <p><strong>ISBN:</strong> ${libro.isbn}</p>
-            <p>${libro.descripcion}</p>
-            ${
-              rolUsuario === "ADMIN"
-                ? `<div class="acciones">
-                     <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
-                     <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
-                   </div>`
-                : ""
-            }
-          </div>
-        `;
-        contenedorLibros.appendChild(card);
-      });
+    libros.forEach(libro => {
+      const card = document.createElement("div");
+      card.classList.add("card");
 
-      if (rolUsuario === "ADMIN") agregarEventos();
+      card.innerHTML = `
+        <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
+        <div class="info">
+          <h3>${libro.titulo}</h3>
+          <p><strong>Autor:</strong> ${libro.autor}</p>
+          <p><strong>Género:</strong> ${libro.genero}</p>
+          <p><strong>ISBN:</strong> ${libro.isbn}</p>
+          <p>${libro.descripcion}</p>
+          ${
+            rolUsuario === "ADMIN"
+              ? `<div class="acciones">
+                   <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
+                   <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+                   <button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>
+                 </div>`
+              : `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>`
+          }
+        </div>
+      `;
 
-      mensajeSinResultados?.classList.remove("mostrar");
+      contenedorLibros.appendChild(card);
+    });
 
-    } catch (error) {
-      console.error("❌ Error al cargar libros:", error);
-    }
+    // ✅ Agregar eventos después de renderizar
+    agregarEventos();
+
+    mensajeSinResultados?.classList.remove("mostrar");
+
+  } catch (error) {
+    console.error("❌ Error al cargar libros:", error);
   }
+}
 
   function agregarEventos() {
     const botonesEliminar = document.querySelectorAll(".boton-eliminar");
     const botonesEditar = document.querySelectorAll(".boton-editar");
+    const botonesReservar = document.querySelectorAll(".boton-reservar");
+
+
+    
+botonesReservar.forEach(boton => {
+  boton.addEventListener("click", async function () {
+    const libroId = parseInt(this.getAttribute("data-id"));
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    if (!usuario || !usuario.id) {
+      Swal.fire("⚠️ Debes iniciar sesión para reservar un libro", "", "warning");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/reservas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          libroId: libroId,
+          usuarioId: usuario.id
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Error ${response.status}: ${errorData}`);
+      }
+
+      const reserva = await response.json();
+      Swal.fire("✅ Reserva creada", "Tu solicitud está pendiente de aprobación.", "success");
+    } catch (error) {
+      console.error("Error completo:", error);
+      Swal.fire("❌ Error", error.message, "error");
+    }
+  });
+});
 
     botonesEliminar.forEach(boton => {
       boton.addEventListener("click", async function () {
@@ -258,8 +307,10 @@ document.addEventListener("DOMContentLoaded", function () {
               ? `<div class="acciones">
                    <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
                    <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+                   <button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>
+                   
                  </div>`
-              : ""
+              : `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>`
           }
         </div>
       `;

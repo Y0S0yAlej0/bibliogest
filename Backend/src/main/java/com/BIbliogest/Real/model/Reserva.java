@@ -4,19 +4,26 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "reservas") // 👈 asegúrate de que coincida con tu tabla en BD
 public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relación con libro
     @ManyToOne
+    @JoinColumn(name = "libro_id", referencedColumnName = "id", nullable = false) // 👈 columna correcta en BD
     private Libro libro;
 
+    // Relación con usuario
     @ManyToOne
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false) // 👈 columna correcta en BD
     private Usuario usuario;
 
+    @Column(nullable = false)
     private String estado = "pendiente"; // pendiente, aprobada, rechazada
 
+    @Column(name = "fecha_reserva", nullable = false)
     private LocalDateTime fechaReserva = LocalDateTime.now();
 
     // --- Getters & Setters ---

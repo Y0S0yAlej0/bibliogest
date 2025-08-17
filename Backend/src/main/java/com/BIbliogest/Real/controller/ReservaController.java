@@ -1,5 +1,6 @@
 package com.BIbliogest.Real.controller;
 
+import com.BIbliogest.Real.dto.ReservaRequest;
 import com.BIbliogest.Real.model.Reserva;
 import com.BIbliogest.Real.service.ReservaService;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservas")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ReservaController {
 
     private final ReservaService reservaService;
@@ -19,11 +21,11 @@ public class ReservaController {
 
     // 1. Crear una reserva
     @PostMapping
-    public ResponseEntity<Reserva> crearReserva(@RequestParam Long usuarioId,
-                                                @RequestParam Long libroId) {
-        Reserva reserva = reservaService.crearReserva(usuarioId, libroId);
+    public ResponseEntity<Reserva> crearReserva(@RequestBody ReservaRequest request) {
+        Reserva reserva = reservaService.crearReserva(request.getLibroId(), request.getUsuarioId()); // CORRECTO
         return ResponseEntity.ok(reserva);
     }
+
 
     // 2. Listar TODAS las reservas (solo admin)
     @GetMapping
