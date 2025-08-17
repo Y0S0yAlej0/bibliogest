@@ -3,51 +3,202 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sidebar</title>
+  <title>Sidebar Dark</title>
+  <!-- SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../css/slide-styles.css">
+
 </head>
 <body>
 
-<div id="sidebar" class="sidebar">
+  <!-- Overlay for mobile -->
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <!-- Toggle Button -->
   <button id="toggleBtn" class="toggle-btn">☰</button>
 
-  <div class="top-section">
-    <a href="inicio.html"><img src="../Assets/image/logo.png" alt="Logo" class="logo"></a>
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="top-section">
+      <a href="inicio.html">
+        <img src="../Assets/image/logo.png" alt="BiblioGest Logo" class="logo">
+      </a>
 
-<nav class="nav-links">
-  <a href="inicio.html">Inicio</a>
-  <a href="resenas.html">Reseñas</a>
-  <a href="news.html">News</a>
-  <a href="../Pages/gestion-reservas.html">Reservas</a>
+      <nav class="nav-links">
+        <a href="inicio.html" style="--index: 0">Inicio</a>
+        <a href="resenas.html" style="--index: 1">Reseñas</a>
+        <a href="news.html" style="--index: 2">News</a>
+        <a href="../Pages/gestion-reservas.html" style="--index: 3">Reservas</a>
 
-  <!-- Catálogo con submenú -->
-  <div class="submenu">
-    <a href="directorio.html" class="submenu-toggle">Catálogo ▶</a>
-    <div class="submenu-links">
-      <a href="directorio.html"> Libros</a>
-      <a href="prestamos.html"> Préstamos</a>
+        <!-- Catálogo con submenú -->
+        <div class="submenu" style="--index: 4">
+          <a href="directorio.html" class="submenu-toggle">Catálogo</a>
+          <div class="submenu-links">
+            <a href="directorio.html">Libros</a>
+            <a href="prestamos.html">Préstamos</a>
+          </div>
+        </div>
+
+        <a href="admin.html" id="adminLink" style="display: none; --index: 5">Panel Admin</a>
+      </nav>
+
+      <div class="user-circle-container">
+        <a href="perfil.html">
+          <div class="user-circle" title="Ver perfil"></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Logout button -->
+    <div class="logout-container">
+      <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
     </div>
   </div>
 
-  <a href="admin.html" id="adminLink" style="display: none;">Panel Admin</a>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('toggleBtn');
+      const overlay = document.getElementById('sidebarOverlay');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const adminLink = document.getElementById('adminLink');
 
-  <div class="user-circle-container">
-    <a href="perfil.html">
-      <div class="user-circle"></div>
-    </a>
-  </div>
-</nav>
-  </div>
+      // Verificar usuario y mostrar link de admin si es necesario
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      if (usuario.rol?.toUpperCase() === 'ADMIN') {
+        adminLink.style.display = 'block';
+      }
 
-  <!-- Logout a la izquierda -->
-<div class="logout-container">
-  <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
-</div>
-</div>
+      // Toggle sidebar
+      function toggleSidebar() {
+        const isOpen = sidebar.classList.contains('open');
+        
+        if (isOpen) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('active');
+          toggleBtn.innerHTML = '☰';
+          document.body.style.overflow = 'auto';
+        } else {
+          sidebar.classList.add('open');
+          overlay.classList.add('active');
+          toggleBtn.innerHTML = '✕';
+          document.body.style.overflow = 'hidden';
+        }
+      }
 
-<!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      // Event listeners
+      toggleBtn.addEventListener('click', toggleSidebar);
+      
+      overlay.addEventListener('click', function() {
+        if (sidebar.classList.contains('open')) {
+          toggleSidebar();
+        }
+      });
 
+      // Cerrar sidebar al hacer click en un link
+      const navLinks = document.querySelectorAll('.nav-links a:not(.submenu-toggle)');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 768) {
+            setTimeout(() => toggleSidebar(), 300);
+          }
+        });
+      });
+
+      // Logout functionality
+      logoutBtn.addEventListener('click', function() {
+        Swal.fire({
+          title: '🚪 ¿Cerrar sesión?',
+          text: '¿Estás seguro de que quieres cerrar tu sesión?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#ff3838',
+          cancelButtonColor: '#5a6c7d',
+          confirmButtonText: 'Sí, cerrar sesión',
+          cancelButtonText: 'Cancelar',
+          background: '#2a3042',
+          color: '#e4e6ea',
+          customClass: {
+            popup: 'swal-dark',
+            title: 'swal-dark-title'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Limpiar localStorage
+            localStorage.removeItem('usuario');
+            
+            Swal.fire({
+              title: '👋 ¡Hasta luego!',
+              text: 'Has cerrado sesión exitosamente',
+              icon: 'success',
+              background: '#2a3042',
+              color: '#e4e6ea',
+              customClass: {
+                popup: 'swal-dark',
+                title: 'swal-dark-title',
+                confirmButton: 'swal-dark-btn'
+              },
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = 'login.html'; // Redirigir al login
+            });
+          }
+        });
+      });
+
+      // Marcar link activo
+      function setActiveLink() {
+        const currentPage = window.location.pathname.split('/').pop();
+        const links = document.querySelectorAll('.nav-links a');
+        
+        links.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href && href.includes(currentPage)) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+
+      setActiveLink();
+
+      // Cerrar sidebar con ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+          toggleSidebar();
+        }
+      });
+
+      // Responsive handling
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
+          document.body.style.overflow = 'auto';
+        }
+      });
+    });
+
+    // SweetAlert2 dark theme styles
+    const style = document.createElement('style');
+    style.textContent = `
+      .swal2-popup.swal-dark {
+        background: #2a3042 !important;
+        color: #e4e6ea !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+      .swal2-title.swal-dark-title {
+        color: #ffffff !important;
+      }
+      .swal2-confirm.swal-dark-btn {
+        background: #4a90e2 !important;
+      }
+      .swal2-cancel {
+        background: #5a6c7d !important;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 
 </body>
 </html>
