@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 Gestión de Reservas - BiblioGest</title>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../css/reservas.css">
+    
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Gestión de Reservas</h1>
+            <p>Administra las solicitudes de reserva de libros</p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number" id="total-reservas">0</div>
+                <div class="stat-label">Total Reservas</div>
+            </div>
+            <div class="stat-card pendientes">
+                <div class="stat-number" id="total-pendientes">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card aprobadas">
+                <div class="stat-number" id="total-aprobadas">0</div>
+                <div class="stat-label">Aprobadas</div>
+            </div>
+            <div class="stat-card rechazadas">
+                <div class="stat-number" id="total-rechazadas">0</div>
+                <div class="stat-label">Rechazadas</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn todas active" data-filter="todas">📋 Todas</button>
+            <button class="filter-btn pendientes" data-filter="pendiente">⏳ Pendientes</button>
+            <button class="filter-btn aprobadas" data-filter="aprobada">✅ Aprobadas</button>
+            <button class="filter-btn rechazadas" data-filter="rechazada">❌ Rechazadas</button>
+        </div>
+
+        <div id="loading" class="loading">
+            Cargando reservas...
+        </div>
+
+        <div id="reservas-container" class="reservas-container" style="display: none;">
+            <!-- Las reservas se cargarán aquí dinámicamente -->
+        </div>
+
+        <div id="no-reservas" class="no-reservas" style="display: none;">
+            <i>📚</i>
+            <div>No hay reservas para mostrar</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let todasLasReservas = [];
+            let filtroActual = 'todas';
+
+            // Verificar si es admin
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
+            if (!usuario || usuario.rol?.toUpperCase() !== 'ADMIN') {
+                Swal.fire({
+                    title: '⚠️ Acceso Denegado',
+                    text: 'Solo los administradores pueden acceder a esta página',
+                    icon: 'warning',
+                    background: '#2c3e50',
+                    color: '#ecf0f1',
+                    customClass: {
+                        popup: 'swal-dark',
+                        title: 'swal-dark-title',
+                        confirmButton: 'swal-dark-btn'
+                    }
+                }).then(() => {
+                    window.location.href = 'catalogo.html'; // Redirigir al catálogo
+                });
+                return;
+            }
+
+            // Cargar reservas al iniciar
+            cargarReservas();
+
+            // Event listeners para filtros
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Actualizar botones activos
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Aplicar filtro
+                    filtroActual = this.dataset.filter;
+                    filtrarReservas();
+                });
+            });
+
+            async function cargarReservas() {
+                try {
+                    showLoading(true);
+                    const response = await fetch('http://localhost:8080/api/reservas');
+                    
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    todasLasReservas = await response.json();
+                    actualizarEstadisticas();
+                    filtrarReservas();
+                    showLoading(false);
+                    
+                } catch (error) {
+                    console.error('Error al cargar reservas:', error);
+                    showLoading(false);
+                    Swal.fire({
+                        title: '❌ Error',
+                        text: 'No se pudieron cargar las reservas: ' + error.message,
+                        icon: 'error',
+                        background: '#2c3e50',
+                        color: '#ecf0f1',
+                        customClass: {
+                            popup: 'swal-dark',
+                            title: 'swal-dark-title',
+                            confirmButton: 'swal-dark-btn'
+                        }
+                    });
+                }
+            }
+
+            function filtrarReservas() {
+                const reservasFiltradas = filtroActual === 'todas' 
+                    ? todasLasReservas 
+                    : todasLasReservas.filter(reserva => reserva.estado.toLowerCase() === filtroActual);
+                    
+                mostrarReservas(reservasFiltradas);
+            }
+
+            function mostrarReservas(reservas) {
+                const container = document.getElementById('reservas-container');
+                const noReservas = document.getElementById('no-reservas');
+                
+                if (reservas.length === 0) {
+                    container.style.display = 'none';
+                    noReservas.style.display = 'block';
+                    return;
+                }
+                
+                container.style.display = 'grid';
+                noReservas.style.display = 'none';
+                
+                container.innerHTML = reservas.map(reserva => {
+                    const fechaFormateada = new Date(reserva.fechaReserva).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const iniciales = reserva.usuario?.nombre ? reserva.usuario.nombre.split(' ').map(n => n[0]).join('') : 'U';
+                    
+                    return `
+                        <div class="reserva-card ${reserva.estado.toLowerCase()} fade-in">
+                            <div class="reserva-avatar">
+                                ${iniciales}
+                            </div>
+                            
+                            <div class="reserva-info">
+                                <div class="reserva-libro">📚 ${reserva.libro?.titulo || 'Libro no disponible'}</div>
+                                <div class="reserva-usuario">👤 ${reserva.usuario?.nombre || 'Usuario no disponible'}</div>
+                                <div class="reserva-fecha">🕒 ${fechaFormateada}</div>
+                            </div>
+                            
+                            <div class="acciones">
+                                <div class="reserva-estado estado-${reserva.estado.toLowerCase()}">
+                                    ${reserva.estado}
+                                </div>
+                                
+                                ${reserva.estado.toLowerCase() === 'pendiente' ? `
+                                    <button class="btn-accion btn-aprobar" onclick="cambiarEstadoReserva(${reserva.id}, 'aprobada')">
+                                        ✅ Aprobar
+                                    </button>
+                                    <button class="btn-accion btn-rechazar" onclick="cambiarEstadoReserva(${reserva.id}, 'rechazada')">
+                                        ❌ Rechazar
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function actualizarEstadisticas() {
+                const total = todasLasReservas.length;
+                const pendientes = todasLasReservas.filter(r => r.estado.toLowerCase() === 'pendiente').length;
+                const aprobadas = todasLasReservas.filter(r => r.estado.toLowerCase() === 'aprobada').length;
+                const rechazadas = todasLasReservas.filter(r => r.estado.toLowerCase() === 'rechazada').length;
+                
+                document.getElementById('total-reservas').textContent = total;
+                document.getElementById('total-pendientes').textContent = pendientes;
+                document.getElementById('total-aprobadas').textContent = aprobadas;
+                document.getElementById('total-rechazadas').textContent = rechazadas;
+            }
+
+            function showLoading(show) {
+                document.getElementById('loading').style.display = show ? 'block' : 'none';
+                document.getElementById('reservas-container').style.display = show ? 'none' : 'grid';
+            }
+
+            // Función global para cambiar estado
+            window.cambiarEstadoReserva = async function(reservaId, nuevoEstado) {
+                const accion = nuevoEstado === 'aprobada' ? 'aprobar' : 'rechazar';
+                const emoji = nuevoEstado === 'aprobada' ? '✅' : '❌';
+                const color = nuevoEstado === 'aprobada' ? '#27ae60' : '#e74c3c';
+                
+                const confirmacion = await Swal.fire({
+                    title: `${emoji} ¿Confirmar ${accion}?`,
+                    text: `¿Estás seguro de que quieres ${accion} esta reserva?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: color,
+                    cancelButtonColor: '#7f8c8d',
+                    confirmButtonText: `Sí, ${accion}`,
+                    cancelButtonText: 'Cancelar',
+                    background: '#2c3e50',
+                    color: '#ecf0f1',
+                    customClass: {
+                        popup: 'swal-dark',
+                        title: 'swal-dark-title'
+                    }
+                });
+
+                if (confirmacion.isConfirmed) {
+                    try {
+                        const response = await fetch(`http://localhost:8080/api/reservas/${reservaId}/${accion}`, {
+                            method: 'PUT'
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Error ${response.status}: ${response.statusText}`);
+                        }
+
+                        const reservaActualizada = await response.json();
+                        
+                        // Actualizar la reserva en el array local
+                        const index = todasLasReservas.findIndex(r => r.id === reservaId);
+                        if (index !== -1) {
+                            todasLasReservas[index] = reservaActualizada;
+                        }
+
+                        // Actualizar la vista
+                        actualizarEstadisticas();
+                        filtrarReservas();
+
+                        Swal.fire({
+                            title: `${emoji} ${accion.charAt(0).toUpperCase() + accion.slice(1)}da`,
+                            text: `La reserva ha sido ${nuevoEstado} exitosamente`,
+                            icon: 'success',
+                            background: '#2c3e50',
+                            color: '#ecf0f1',
+                            customClass: {
+                                popup: 'swal-dark',
+                                title: 'swal-dark-title',
+                                confirmButton: 'swal-dark-btn'
+                            }
+                        });
+
+                    } catch (error) {
+                        console.error(`Error al ${accion} reserva:`, error);
+                        Swal.fire({
+                            title: '❌ Error',
+                            text: `No se pudo ${accion} la reserva: ${error.message}`,
+                            icon: 'error',
+                            background: '#2c3e50',
+                            color: '#ecf0f1',
+                            customClass: {
+                                popup: 'swal-dark',
+                                title: 'swal-dark-title',
+                                confirmButton: 'swal-dark-btn'
+                            }
+                        });
+                    }
+                }
+            };
+        });
+    </script>
+      <script src="../js/slidebar.js"></script>
+  <div id="footer-container"></div>
+  <script src="../js/include-footer.js"></script>
+</body>
+</html>
