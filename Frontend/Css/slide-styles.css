@@ -158,14 +158,7 @@
       border-color: #4a90e2;
     }
 
-    /* Icons for navigation */
-    .nav-links a[href*="inicio"]::before { content: '🏠'; }
-    .nav-links a[href*="resenas"]::before { content: '⭐'; }
-    .nav-links a[href*="news"]::before { content: '📰'; }
-    .nav-links a[href*="reservas"]::before { content: '📋'; }
-    .nav-links a[href*="directorio"]::before { content: '📚'; }
-    .nav-links a[href*="prestamos"]::before { content: '📖'; }
-    .nav-links a[href*="admin"]::before { content: '⚙️'; }
+  
 
     .user-circle-container {
       display: flex;
@@ -324,7 +317,7 @@
     }
 
     .submenu-links a::before {
-      content: '•';
+  
       position: absolute;
       left: 30px;
       color: #4a90e2;

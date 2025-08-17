@@ -21,9 +21,14 @@ public class ReservaController {
 
     // 1. Crear una reserva
     @PostMapping
-    public ResponseEntity<Reserva> crearReserva(@RequestBody ReservaRequest request) {
-        Reserva reserva = reservaService.crearReserva(request.getLibroId(), request.getUsuarioId()); // CORRECTO
-        return ResponseEntity.ok(reserva);
+    public ResponseEntity<?> crearReserva(@RequestBody ReservaRequest request) {
+        try {
+            Reserva reserva = reservaService.crearReserva(request.getLibroId(), request.getUsuarioId());
+            return ResponseEntity.ok(reserva);
+        } catch (RuntimeException e) {
+            // Devolver error 400 (Bad Request) en lugar de 500
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
@@ -49,5 +54,16 @@ public class ReservaController {
     @PutMapping("/{id}/rechazar")
     public ResponseEntity<Reserva> rechazarReserva(@PathVariable Long id) {
         return ResponseEntity.ok(reservaService.cambiarEstado(id, "rechazada"));
+    }
+
+    // 6. Devolver un libro
+    @PutMapping("/{id}/devolver")
+    public ResponseEntity<String> devolverLibro(@PathVariable Long id) {
+        try {
+            reservaService.devolverLibro(id);
+            return ResponseEntity.ok("Libro devuelto correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

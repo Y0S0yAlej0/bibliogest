@@ -77,6 +77,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const card = document.createElement("div");
       card.classList.add("card");
 
+      // Determinar si está disponible
+      const disponible = libro.cantidad > 0;
+      const estadoTexto = disponible ? `Disponibles: ${libro.cantidad}` : "Agotado";
+      const estadoClase = disponible ? "disponible" : "agotado";
+
       card.innerHTML = `
         <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
         <div class="info">
@@ -84,15 +89,16 @@ document.addEventListener("DOMContentLoaded", function () {
           <p><strong>Autor:</strong> ${libro.autor}</p>
           <p><strong>Género:</strong> ${libro.genero}</p>
           <p><strong>ISBN:</strong> ${libro.isbn}</p>
+          <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
           <p>${libro.descripcion}</p>
           ${
             rolUsuario === "ADMIN"
               ? `<div class="acciones">
                    <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
                    <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
-                   <button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>
+                   ${disponible ? `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : `<button class="boton-reservar" disabled>📚 Agotado</button>`}
                  </div>`
-              : `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>`
+              : `${disponible ? `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : `<button class="boton-reservar" disabled>📚 Agotado</button>`}`
           }
         </div>
       `;
@@ -119,6 +125,11 @@ document.addEventListener("DOMContentLoaded", function () {
     
 botonesReservar.forEach(boton => {
   boton.addEventListener("click", async function () {
+    if (this.disabled) {
+      Swal.fire("❌ Libro agotado", "Este libro no está disponible actualmente.", "error");
+      return;
+    }
+
     const libroId = parseInt(this.getAttribute("data-id"));
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -139,20 +150,29 @@ botonesReservar.forEach(boton => {
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`Error ${response.status}: ${errorData}`);
+      if (response.ok) {
+        const reserva = await response.json();
+        Swal.fire("✅ Reserva creada", "Tu solicitud está pendiente de aprobación.", "success");
+        cargarLibros();
+      } else {
+        // Extraer el mensaje sin mostrar el código de error
+        const mensaje = await response.text();
+        
+        // Determinar el tipo de alerta basado en el mensaje
+        if (mensaje.includes("Ya tienes una reserva activa")) {
+          Swal.fire("ℹ️ Información", mensaje, "info");
+        } else if (mensaje.includes("No hay ejemplares disponibles")) {
+          Swal.fire("📚 Sin stock", mensaje, "warning");
+        } else {
+          Swal.fire("⚠️ Aviso", mensaje, "warning");
+        }
       }
-
-      const reserva = await response.json();
-      Swal.fire("✅ Reserva creada", "Tu solicitud está pendiente de aprobación.", "success");
     } catch (error) {
-      console.error("Error completo:", error);
-      Swal.fire("❌ Error", error.message, "error");
+      console.error("Error de conexión:", error);
+      Swal.fire("❌ Error de conexión", "Hubo un problema al conectar con el servidor.", "error");
     }
   });
 });
-
     botonesEliminar.forEach(boton => {
       boton.addEventListener("click", async function () {
         const id = this.getAttribute("data-id");

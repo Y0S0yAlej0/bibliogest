@@ -1,5 +1,5 @@
 package com.BIbliogest.Real.service;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.BIbliogest.Real.model.Libro;
 import com.BIbliogest.Real.model.Reserva;
 import com.BIbliogest.Real.model.Usuario;
@@ -8,6 +8,7 @@ import com.BIbliogest.Real.repository.ReservaRepository;
 import com.BIbliogest.Real.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -35,6 +36,15 @@ public class ReservaService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // Verificar si ya tiene una reserva activa de este libro
+        List<Reserva> reservasActivas = reservaRepository.findByUsuarioAndLibroAndEstadoIn(
+                usuario, libro, Arrays.asList("pendiente", "aprobada")
+        );
+
+        if (!reservasActivas.isEmpty()) {
+            throw new RuntimeException("Ya tienes una reserva activa para este libro");
+        }
+
         if (libro.getCantidad() <= 0) {
             throw new RuntimeException("No hay ejemplares disponibles");
         }
@@ -46,7 +56,6 @@ public class ReservaService {
 
         return reservaRepository.save(reserva);
     }
-
     /**
      * Listar todas las reservas (solo admin)
      */
@@ -67,6 +76,9 @@ public class ReservaService {
     /**
      * Cambiar el estado de una reserva (aprobada, rechazada, pendiente)
      */
+
+
+    @Transactional  // ← Agregar esta anotación
     public Reserva cambiarEstado(Long reservaId, String nuevoEstado) {
         Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
@@ -78,10 +90,8 @@ public class ReservaService {
                 throw new RuntimeException("No hay ejemplares disponibles para este libro");
             }
 
-            // Restar un ejemplar al aprobar
             libro.setCantidad(libro.getCantidad() - 1);
 
-            // Si se acaba → marcar como agotado
             if (libro.getCantidad() == 0) {
                 libro.setEstado("agotado");
             }
@@ -92,7 +102,6 @@ public class ReservaService {
         reserva.setEstado(nuevoEstado);
         return reservaRepository.save(reserva);
     }
-
     /**
      * Devolver un libro (solo reservas aprobadas)
      */
