@@ -26,11 +26,9 @@ public class ReservaController {
             Reserva reserva = reservaService.crearReserva(request.getLibroId(), request.getUsuarioId());
             return ResponseEntity.ok(reserva);
         } catch (RuntimeException e) {
-            // Devolver error 400 (Bad Request) en lugar de 500
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 
     // 2. Listar TODAS las reservas (solo admin)
     @GetMapping
@@ -65,5 +63,34 @@ public class ReservaController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // 🆕 7. Obtener reservas próximas a vencer de un usuario
+    @GetMapping("/usuario/{usuarioId}/proximas-vencer")
+    public ResponseEntity<List<Reserva>> getReservasProximasAVencer(@PathVariable Long usuarioId) {
+        try {
+            List<Reserva> reservas = reservaService.getReservasProximasAVencer(usuarioId);
+            return ResponseEntity.ok(reservas);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 🆕 8. Obtener reservas vencidas de un usuario
+    @GetMapping("/usuario/{usuarioId}/vencidas")
+    public ResponseEntity<List<Reserva>> getReservasVencidas(@PathVariable Long usuarioId) {
+        try {
+            List<Reserva> reservas = reservaService.getReservasVencidas(usuarioId);
+            return ResponseEntity.ok(reservas);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 🆕 9. Marcar reservas vencidas manualmente (para pruebas o admin)
+    @PostMapping("/marcar-vencidas")
+    public ResponseEntity<String> marcarReservasVencidas() {
+        reservaService.marcarReservasVencidas();
+        return ResponseEntity.ok("Proceso de marcado de reservas vencidas completado");
     }
 }
