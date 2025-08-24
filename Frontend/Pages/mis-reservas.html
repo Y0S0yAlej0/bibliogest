@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas - BiblioGest</title>
+    <link rel="stylesheet" href="../Css/inicio.css">
+    <link rel="stylesheet" href="../Css/mis-reservas.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+
+
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-bookmark"></i>
+                Mis Reservas
+            </h1>
+
+            <!-- Notificaciones importantes -->
+            <div id="alertas-container"></div>
+
+            <!-- Filtros modernos con botones -->
+            <div class="filtros-container">
+                <div class="filtro-grupo">
+                    <label>
+                        Filtrar reservas:
+                    </label>
+                </div>
+                
+                <div class="filtros-botones">
+                    <button class="filtro-btn activo" data-estado="todas">
+                        <i class="fas fa-list"></i> Todas
+                    </button>
+                    <button class="filtro-btn pendiente" data-estado="pendiente">
+                        <i class="fas fa-clock"></i> Pendientes
+                    </button>
+                    <button class="filtro-btn aprobada" data-estado="aprobada">
+                        <i class="fas fa-check-circle"></i> Aprobadas
+                    </button>
+                    <button class="filtro-btn rechazada" data-estado="rechazada">
+                        <i class="fas fa-times-circle"></i> Rechazadas
+                    </button>
+                    <button class="filtro-btn devuelta" data-estado="devuelta">
+                        <i class="fas fa-undo"></i> Devueltas
+                    </button>
+                    <button class="filtro-btn vencida" data-estado="vencida">
+                        <i class="fas fa-exclamation-triangle"></i> Vencidas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor de reservas -->
+            <div id="reservas-container" class="reservas-grid">
+                <!-- Las reservas se cargarán aquí dinámicamente -->
+            </div>
+
+            <!-- Mensaje cuando no hay reservas -->
+            <div id="no-reservas" class="no-reservas" style="display: none;">
+                <i class="fas fa-bookmark"></i>
+                <h3>No tienes reservas</h3>
+                <p>Ve al catálogo y reserva tu primer libro</p>
+                <a href="catalogo.html" class="btn-ir-catalogo">
+                    <i class="fas fa-book"></i>
+                    Ir al Catálogo
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../Js/include-header.js"></script>
+    <script src="../Js/slidebar.js"></script>
+    <script src="../Js/mis-reservas.js"></script>
+</body>
+</html>

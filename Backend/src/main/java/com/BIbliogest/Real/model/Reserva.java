@@ -2,29 +2,36 @@ package com.BIbliogest.Real.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
-@Table(name = "reservas") // 👈 asegúrate de que coincida con tu tabla en BD
+@Table(name = "reservas")
 public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación con libro
     @ManyToOne
-    @JoinColumn(name = "libro_id", referencedColumnName = "id", nullable = false) // 👈 columna correcta en BD
+    @JoinColumn(name = "libro_id", referencedColumnName = "id", nullable = false)
     private Libro libro;
 
-    // Relación con usuario
     @ManyToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false) // 👈 columna correcta en BD
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false)
     private Usuario usuario;
 
     @Column(nullable = false)
-    private String estado = "pendiente"; // pendiente, aprobada, rechazada
+    private String estado = "pendiente"; // pendiente, aprobada, rechazada, devuelta, vencida
 
     @Column(name = "fecha_reserva", nullable = false)
     private LocalDateTime fechaReserva = LocalDateTime.now();
+
+    // 🆕 Nueva: fecha cuando se aprueba la reserva
+    @Column(name = "fecha_aprobacion")
+    private LocalDateTime fechaAprobacion;
+
+    // 🆕 Nueva: fecha límite para devolver (15 días después de aprobación)
+    @Column(name = "fecha_limite_devolucion")
+    private LocalDateTime fechaLimiteDevolucion;
 
     // --- Getters & Setters ---
     public Long getId() {
@@ -67,9 +74,31 @@ public class Reserva {
         this.fechaReserva = fechaReserva;
     }
 
+    public LocalDateTime getFechaAprobacion() {
+        return fechaAprobacion;
+    }
+
+    public void setFechaAprobacion(LocalDateTime fechaAprobacion) {
+        this.fechaAprobacion = fechaAprobacion;
+        // Automáticamente calcular fecha límite (15 días después)
+        if (fechaAprobacion != null) {
+            this.fechaLimiteDevolucion = fechaAprobacion.plusDays(15);
+        }
+    }
+
+    public LocalDateTime getFechaLimiteDevolucion() {
+        return fechaLimiteDevolucion;
+    }
+
+    public void setFechaLimiteDevolucion(LocalDateTime fechaLimiteDevolucion) {
+        this.fechaLimiteDevolucion = fechaLimiteDevolucion;
+    }
+
     // --- Métodos de ayuda ---
     public void aprobar() {
         this.estado = "aprobada";
+        this.fechaAprobacion = LocalDateTime.now();
+        this.fechaLimiteDevolucion = this.fechaAprobacion.plusDays(15);
     }
 
     public void rechazar() {
@@ -78,5 +107,34 @@ public class Reserva {
 
     public boolean estaPendiente() {
         return "pendiente".equalsIgnoreCase(this.estado);
+    }
+
+    public boolean estaAprobada() {
+        return "aprobada".equalsIgnoreCase(this.estado);
+    }
+
+    public boolean estaVencida() {
+        return estaAprobada() && fechaLimiteDevolucion != null &&
+                LocalDateTime.now().isAfter(fechaLimiteDevolucion);
+    }
+
+    // Obtener días restantes para devolver
+    public long getDiasRestantes() {
+        if (!estaAprobada() || fechaLimiteDevolucion == null) {
+            return 0;
+        }
+
+        long dias = ChronoUnit.DAYS.between(LocalDateTime.now(), fechaLimiteDevolucion);
+        return Math.max(0, dias); // No devolver números negativos
+    }
+
+    // Obtener días de retraso
+    public long getDiasRetraso() {
+        if (!estaAprobada() || fechaLimiteDevolucion == null) {
+            return 0;
+        }
+
+        long dias = ChronoUnit.DAYS.between(fechaLimiteDevolucion, LocalDateTime.now());
+        return Math.max(0, dias); // Solo si está atrasado
     }
 }
