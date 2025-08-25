@@ -28,7 +28,7 @@
         <a href="inicio.html" style="--index: 0">Inicio</a>
         <a href="resenas.html" style="--index: 1">Reseñas</a>
         <a href="news.html" style="--index: 2">News</a>
-        <a href="../Pages/gestion-reservas.html" style="--index: 3">Reservas</a>
+
 
         <!-- Catálogo con submenú -->
         <div class="submenu" style="--index: 4">
@@ -40,9 +40,8 @@
           </div>
         </div>
 
-
-                <!-- Catálogo con submenú -->
-        <div class="submenu" style="--index: 4">
+        <!-- Panel Admin - Solo visible para administradores -->
+        <div id="adminLink" class="submenu" style="--index: 5; display: none;">
           <a href="admin.html" class="submenu-toggle">Panel Admin</a>
           <div class="submenu-links">
             <a href="admin.html">Gestion De Libros</a>
@@ -50,6 +49,7 @@
           </div>
         </div>
 
+      </nav>
 
       <div class="user-circle-container">
         <a href="perfil.html">
@@ -74,8 +74,18 @@
 
       // Verificar usuario y mostrar link de admin si es necesario
       const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-      if (usuario.rol?.toUpperCase() === 'ADMIN') {
-        adminLink.style.display = 'block';
+      console.log('Usuario encontrado:', usuario); // Debug
+      
+      if (usuario.rol && usuario.rol.toUpperCase() === 'ADMIN') {
+        console.log('Usuario es admin, mostrando panel'); // Debug
+        if (adminLink) {
+          adminLink.style.display = 'block';
+        }
+      } else {
+        console.log('Usuario no es admin o no existe'); // Debug
+        if (adminLink) {
+          adminLink.style.display = 'none';
+        }
       }
 
       // Toggle sidebar
