@@ -259,22 +259,55 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
 
-      if (formValues) {
-        try {
-          const response = await fetch("http://localhost:8080/api/libros", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formValues),
-          });
+      // En la función del botón agregar, cambia la parte del fetch por esto:
 
-          if (!response.ok) throw new Error("No se pudo agregar el libro");
+if (formValues) {
+  try {
+    // 🔧 SOLUCIÓN: Limpiar datos antes de enviar
+    const datosLimpios = {
+      titulo: formValues.titulo || "",
+      autor: formValues.autor || "",
+      categoria: formValues.categoria || null,
+      registro: formValues.registro || null,
+      signaturaTopografica: formValues.signaturaTopografica || null,
+      cantidadRegistro: formValues.cantidadRegistro || null,
+      paginas: formValues.paginas || null,
+      ejemplar: formValues.ejemplar || null,
+      imagen: formValues.imagen || null,
+      cantidad: formValues.cantidad || 1,
+      sinopsis: formValues.sinopsis || null,
+      observaciones: formValues.observaciones || null,
+      estado: "disponible"
+    };
 
-          Swal.fire("✅ Libro agregado", "", "success");
-          cargarLibros();
-        } catch (error) {
-          Swal.fire("❌ Error", error.message, "error");
-        }
-      }
+    console.log("📤 Datos que se envían:", datosLimpios); // Para debug
+
+    const response = await fetch("http://localhost:8080/api/libros", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(datosLimpios),
+    });
+
+    if (!response.ok) {
+      // 🔍 Obtener más detalles del error
+      const errorText = await response.text();
+      console.error("❌ Error del servidor:", errorText);
+      throw new Error(`Error ${response.status}: ${errorText}`);
+    }
+
+    const resultado = await response.json();
+    console.log("✅ Libro creado:", resultado);
+    
+    Swal.fire("✅ Libro agregado", "", "success");
+    cargarLibros();
+  } catch (error) {
+    console.error("❌ Error completo:", error);
+    Swal.fire("❌ Error", error.message, "error");
+  }
+}
     });
   }
 
