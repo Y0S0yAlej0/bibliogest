@@ -29,13 +29,52 @@ public class LibroService {
         Optional<Libro> libroExistente = libroRepository.findById(id);
         if (libroExistente.isPresent()) {
             Libro libro = libroExistente.get();
-            // Evitar valores nulos o vacíos
-            if (libroActualizado.getTitulo() != null) libro.setTitulo(libroActualizado.getTitulo());
-            if (libroActualizado.getAutor() != null) libro.setAutor(libroActualizado.getAutor());
-            if (libroActualizado.getGenero() != null) libro.setGenero(libroActualizado.getGenero());
-            if (libroActualizado.getIsbn() != null) libro.setIsbn(libroActualizado.getIsbn());
-            if (libroActualizado.getDescripcion() != null) libro.setDescripcion(libroActualizado.getDescripcion());
-            if (libroActualizado.getImagen() != null) libro.setImagen(libroActualizado.getImagen());
+
+            // Campos básicos
+            if (libroActualizado.getTitulo() != null && !libroActualizado.getTitulo().trim().isEmpty()) {
+                libro.setTitulo(libroActualizado.getTitulo());
+            }
+            if (libroActualizado.getAutor() != null && !libroActualizado.getAutor().trim().isEmpty()) {
+                libro.setAutor(libroActualizado.getAutor());
+            }
+            if (libroActualizado.getSinopsis() != null && !libroActualizado.getSinopsis().trim().isEmpty()) {
+                libro.setSinopsis(libroActualizado.getSinopsis());
+            }
+            if (libroActualizado.getRegistro() != null && !libroActualizado.getRegistro().trim().isEmpty()) {
+                libro.setRegistro(libroActualizado.getRegistro());
+            }
+
+            // Campos nuevos
+            if (libroActualizado.getCategoria() != null && !libroActualizado.getCategoria().trim().isEmpty()) {
+                libro.setCategoria(libroActualizado.getCategoria());
+            }
+            if (libroActualizado.getSignaturaTopografica() != null && !libroActualizado.getSignaturaTopografica().trim().isEmpty()) {
+                libro.setSignaturaTopografica(libroActualizado.getSignaturaTopografica());
+            }
+            if (libroActualizado.getCantidadRegistro() != null) {
+                libro.setCantidadRegistro(libroActualizado.getCantidadRegistro());
+            }
+            if (libroActualizado.getPaginas() != null) {
+                libro.setPaginas(libroActualizado.getPaginas());
+            }
+            if (libroActualizado.getEjemplar() != null && !libroActualizado.getEjemplar().trim().isEmpty()) {
+                libro.setEjemplar(libroActualizado.getEjemplar());
+            }
+            if (libroActualizado.getObservaciones() != null && !libroActualizado.getObservaciones().trim().isEmpty()) {
+                libro.setObservaciones(libroActualizado.getObservaciones());
+            }
+
+            // Campos existentes
+            if (libroActualizado.getImagen() != null && !libroActualizado.getImagen().trim().isEmpty()) {
+                libro.setImagen(libroActualizado.getImagen());
+            }
+            if (libroActualizado.getEstado() != null && !libroActualizado.getEstado().trim().isEmpty()) {
+                libro.setEstado(libroActualizado.getEstado());
+            }
+            if (libroActualizado.getCantidad() != null) {
+                libro.setCantidad(libroActualizado.getCantidad());
+            }
+
             return Optional.of(libroRepository.save(libro));
         } else {
             return Optional.empty();

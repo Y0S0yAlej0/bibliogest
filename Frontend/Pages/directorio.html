@@ -7,41 +7,97 @@
   <link rel="stylesheet" href="../css/directorio.css">
   <link rel="icon" href="../Assets/Icons/favicon.svg" />
 </head>
-
-
-
+<body>
   <!-- Contenido principal -->
   <main class="container">
-        <!-- 🔍 Barra de búsqueda -->
+    <!-- 🔍 Barra de búsqueda -->
     <section class="busqueda">
-      <h1>Catálogo de Libros</h1>
+      <h1>📚 Catálogo de Libros</h1>
       <form id="form-busqueda">
-        <input type="text" id="buscar-input" placeholder="Buscar por título o autor..." />
+        <input type="text" id="buscar-input" placeholder="🔍 Buscar por título o autor..." />
         <button type="submit">Buscar</button>
       </form>
     </section>
 
- 
-
-
     <!-- Aquí se cargarán las tarjetas de libros dinámicamente -->
     <section class="libros"></section>
-        <!-- 🛑 Mensaje cuando no hay resultados -->
+    
+    <!-- 🛑 Mensaje cuando no hay resultados -->
     <div id="mensaje-sin-resultados" class="oculto">
       <div class="icono">😕</div>
       <div class="texto">No se encontraron libros con ese término.</div>
     </div>
+
+    <!-- 🆕 Botón flotante para agregar libro (solo visible para admins) -->
+    <button id="btn-agregar-libro" class="btn-flotante" title="Agregar nuevo libro">
+      ➕
+    </button>
   </main>
 
   <!-- Scripts -->
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../js/slidebar.js"></script>
   <div id="footer-container"></div>
   <script src="../js/include-footer.js"></script>
   <script src="../js/catalogo-carga.js" defer></script>
 
+  <style>
+    /* Estilos adicionales para el botón flotante mejorado */
+    .btn-flotante {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, #4a90e2, #357abd);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(74, 144, 226, 0.4);
+      z-index: 1000;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
 
+    .btn-flotante:hover {
+      transform: translateY(-5px) scale(1.1);
+      box-shadow: 0 15px 40px rgba(74, 144, 226, 0.6);
+      background: linear-gradient(135deg, #357abd, #2868a8);
+    }
 
+    .btn-flotante:active {
+      transform: translateY(-2px) scale(1.05);
+    }
 
+    /* Animación de entrada */
+    .btn-flotante {
+      animation: slideInUp 0.6s ease-out;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .btn-flotante {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 20px;
+      }
+    }
+  </style>
 </body>
 </html>
