@@ -264,23 +264,24 @@ document.addEventListener("DOMContentLoaded", function () {
 if (formValues) {
   try {
     // 🔧 SOLUCIÓN: Limpiar datos antes de enviar
-    const datosLimpios = {
-      titulo: formValues.titulo || "",
-      autor: formValues.autor || "",
-      categoria: formValues.categoria || null,
-      registro: formValues.registro || null,
-      signaturaTopografica: formValues.signaturaTopografica || null,
-      cantidadRegistro: formValues.cantidadRegistro || null,
-      paginas: formValues.paginas || null,
-      ejemplar: formValues.ejemplar || null,
-      imagen: formValues.imagen || null,
-      cantidad: formValues.cantidad || 1,
-      sinopsis: formValues.sinopsis || null,
-      observaciones: formValues.observaciones || null,
-      estado: "disponible"
-    };
+  // 🔧 SOLUCIÓN: Limpiar datos antes de enviar
+const datosLimpios = {
+  titulo: formValues.titulo || "",
+  autor: formValues.autor || "",
+  genero: formValues.categoria || "Sin categoría", // CAMBIO: usar genero y valor por defecto
+  registro: formValues.registro || null,
+  signaturaTopografica: formValues.signaturaTopografica || null,
+  cantidadRegistro: formValues.cantidadRegistro || null,
+  paginas: formValues.paginas || null,
+  ejemplar: formValues.ejemplar || null,
+  imagen: formValues.imagen || null,
+  cantidad: formValues.cantidad || 1,
+  sinopsis: formValues.sinopsis || null,
+  observaciones: formValues.observaciones || null,
+  estado: "disponible"
+};
 
-    console.log("📤 Datos que se envían:", datosLimpios); // Para debug
+console.log("📤 Datos que se envían:", datosLimpios); // Para debug
 
     const response = await fetch("http://localhost:8080/api/libros", {
       method: "POST",

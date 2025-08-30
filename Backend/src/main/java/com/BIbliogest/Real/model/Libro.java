@@ -20,10 +20,11 @@ public class Libro {
     private String sinopsis;
 
     @Column(name = "registro")
-    private String registro; // Cambio de isbn a registro
+    private String registro;
 
-    @Column(name = "categoria")
-    private String categoria;
+    // CAMBIO: Usar genero en lugar de categoria para coincidir con la BD
+    @Column(name = "genero", nullable = false)
+    private String genero;
 
     @Column(name = "signatura_topografica")
     private String signaturaTopografica;
@@ -53,14 +54,14 @@ public class Libro {
     public Libro() {}
 
     public Libro(String titulo, String autor, String sinopsis, String registro,
-                 String categoria, String signaturaTopografica, Integer cantidadRegistro,
+                 String genero, String signaturaTopografica, Integer cantidadRegistro,
                  Integer paginas, String ejemplar, String observaciones,
                  String imagen, String estado, Integer cantidad) {
         this.titulo = titulo;
         this.autor = autor;
         this.sinopsis = sinopsis;
         this.registro = registro;
-        this.categoria = categoria;
+        this.genero = genero;
         this.signaturaTopografica = signaturaTopografica;
         this.cantidadRegistro = cantidadRegistro;
         this.paginas = paginas;
@@ -112,12 +113,12 @@ public class Libro {
         this.registro = registro;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public String getGenero() {
+        return genero;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     public String getSignaturaTopografica() {
@@ -184,13 +185,13 @@ public class Libro {
         this.cantidad = cantidad;
     }
 
-    // Para mantener compatibilidad con código existente
-    public String getGenero() {
-        return categoria;
+    // Métodos de compatibilidad - IMPORTANTE: mapear categoria a genero
+    public String getCategoria() {
+        return genero;
     }
 
-    public void setGenero(String genero) {
-        this.categoria = genero;
+    public void setCategoria(String categoria) {
+        this.genero = categoria;
     }
 
     public String getDescripcion() {
