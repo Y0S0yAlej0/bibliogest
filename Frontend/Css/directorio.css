@@ -458,3 +458,98 @@ button:disabled {
   margin: 12px auto 0;
   max-width: 150px;
 }
+
+/* === ESTILOS PARA FAVORITOS EN EL CATÁLOGO === */
+.acciones-libro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.boton-favorito {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #b0b3b8;
+  padding: 0.6rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.3rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.boton-favorito:hover {
+  border-color: #ff6b9d;
+  color: #ff6b9d;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+}
+
+.boton-favorito.favorito-activo {
+  background: linear-gradient(135deg, #ff6b9d, #e91e63);
+  border-color: #ff6b9d;
+  color: white;
+  animation: heartPulse 0.6s ease;
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.boton-favorito.favorito-activo:hover {
+  background: linear-gradient(135deg, #e91e63, #c2185b);
+  transform: scale(1.1);
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.acciones-admin {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.boton-reservar {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Ajustes para las tarjetas existentes */
+.card {
+  position: relative;
+  overflow: visible; /* Para que el botón de favorito no se corte */
+}
+
+.card .info {
+  position: relative;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .acciones-libro {
+    gap: 0.6rem;
+  }
+  
+  .boton-favorito {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+  }
+  
+  .acciones-admin {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}

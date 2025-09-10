@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Favoritos - Biblioteca Digital</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../Css/mis-favoritos.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-heart"></i>
+                Mis Libros Favoritos
+            </h1>
+
+            <!-- Contador de favoritos -->
+            <div class="contador-favoritos">
+                <div class="contador-card">
+                    <i class="fas fa-heart"></i>
+                    <div class="contador-info">
+                        <span class="contador-numero" id="contador-total">0</span>
+                        <span class="contador-texto">Libros en Favoritos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros-container">
+                <div class="filtro-grupo">
+                    <label for="filtro-buscar">
+                        <i class="fas fa-search"></i>
+                        Buscar en favoritos:
+                    </label>
+                    <input type="text" id="filtro-buscar" class="filtro-input" placeholder="Buscar por título, autor o categoría...">
+                </div>
+                
+                <div class="filtros-botones">
+                    <button class="filtro-btn activo" data-categoria="todos">
+                        <i class="fas fa-list"></i>
+                        Todos los Favoritos
+                        <span class="contador-badge" id="contador-todos">0</span>
+                    </button>
+                    <button class="filtro-btn" data-categoria="disponible">
+                        <i class="fas fa-check-circle"></i>
+                        Disponibles
+                        <span class="contador-badge disponible" id="contador-disponibles">0</span>
+                    </button>
+                    <button class="filtro-btn" data-categoria="agotado">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Agotados
+                        <span class="contador-badge agotado" id="contador-agotados">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="acciones-rapidas">
+                <button class="btn-accion-rapida" id="btn-limpiar-favoritos">
+                    <i class="fas fa-trash-alt"></i>
+                    Limpiar Favoritos
+                </button>
+                <button class="btn-accion-rapida" id="btn-exportar-favoritos">
+                    <i class="fas fa-download"></i>
+                    Exportar Lista
+                </button>
+                <button class="btn-accion-rapida" id="btn-compartir-favoritos">
+                    <i class="fas fa-share"></i>
+                    Compartir
+                </button>
+            </div>
+
+            <!-- Grid de favoritos -->
+            <div class="favoritos-grid" id="favoritos-grid">
+                <!-- Los favoritos se cargarán dinámicamente -->
+            </div>
+
+            <!-- Mensaje sin favoritos -->
+            <div class="no-favoritos" id="no-favoritos" style="display: none;">
+                <i class="fas fa-heart-broken"></i>
+                <h3>No tienes favoritos guardados</h3>
+                <p>Explora nuestro catálogo y agrega libros a tus favoritos para verlos aquí.</p>
+                <a href="catalogo.html" class="btn-ir-catalogo">
+                    <i class="fas fa-books"></i>
+                    Explorar Catálogo
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="mis-favoritos.js"></script>
+    <script src="../Js/include-header.js"></script>
+    <script src="../Js/slidebar.js"></script>
+</body>
+</html>

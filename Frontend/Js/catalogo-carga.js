@@ -14,6 +14,81 @@ document.addEventListener("DOMContentLoaded", function () {
   const rolUsuario = usuario?.rol?.toUpperCase() || "";
   const usuarioId = usuario ? usuario.id : null;
 
+// === VARIABLES PARA FAVORITOS === //
+let favoritos = [];
+
+// Función para cargar favoritos del usuario
+function cargarFavoritos() {
+  if (!usuario) return;
+  const favoritosGuardados = localStorage.getItem(`favoritos_${usuario.id}`);
+  favoritos = favoritosGuardados ? JSON.parse(favoritosGuardados) : [];
+}
+
+// Función para verificar si un libro es favorito
+function esFavorito(libroId) {
+  return favoritos.some(fav => fav.libroId === libroId);
+}
+
+// Función para toggle favorito
+function toggleFavorito(libroId) {
+  if (!usuario || !usuario.id) {
+    Swal.fire("⚠️ Error", "Debes iniciar sesión para agregar favoritos", "warning");
+    return;
+  }
+
+  const yaEsFavorito = favoritos.some(fav => fav.libroId === libroId);
+  const btnFavorito = document.querySelector(`[data-favorito-id="${libroId}"]`);
+  
+  if (yaEsFavorito) {
+    // Quitar de favoritos
+    favoritos = favoritos.filter(fav => fav.libroId !== libroId);
+    localStorage.setItem(`favoritos_${usuario.id}`, JSON.stringify(favoritos));
+    
+    if (btnFavorito) {
+      btnFavorito.innerHTML = '<i class="far fa-heart"></i>';
+      btnFavorito.classList.remove('favorito-activo');
+      btnFavorito.title = 'Agregar a favoritos';
+    }
+    
+    Swal.fire({
+      title: "💔 Quitado de favoritos",
+      text: "El libro fue removido de tus favoritos",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false
+    });
+  } else {
+    // Agregar a favoritos
+    favoritos.push({
+      libroId: parseInt(libroId),
+      fechaAgregado: new Date().toISOString()
+    });
+    localStorage.setItem(`favoritos_${usuario.id}`, JSON.stringify(favoritos));
+    
+    if (btnFavorito) {
+      btnFavorito.innerHTML = '<i class="fas fa-heart"></i>';
+      btnFavorito.classList.add('favorito-activo');
+      btnFavorito.title = 'Quitar de favoritos';
+    }
+    
+    Swal.fire({
+      title: "❤️ Agregado a favoritos",
+      text: "El libro se agregó a tu lista de favoritos",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+      showCancelButton: true,
+      cancelButtonText: "Ver favoritos",
+      cancelButtonColor: "#ff6b9d"
+    }).then((result) => {
+      if (result.dismiss === Swal.DismissReason.cancel) {
+        window.location.href = "mis-favoritos.html";
+      }
+    });
+  }
+}
+
+  
   // 🔄 Modal: abrir/cerrar - FORMULARIO COMPLETO ACTUALIZADO
   if (btnAgregar) {
     btnAgregar.addEventListener("click", async () => {
@@ -312,6 +387,10 @@ console.log("📤 Datos que se envían:", datosLimpios); // Para debug
     });
   }
 
+
+
+
+  
   async function cargarLibros() {
     if (!contenedorLibros) return;
     try {
@@ -328,26 +407,45 @@ console.log("📤 Datos que se envían:", datosLimpios); // Para debug
         const estadoTexto = disponible ? `Disponibles: ${libro.cantidad}` : "Agotado";
         const estadoClase = disponible ? "disponible" : "agotado";
 
-        card.innerHTML = `
-          <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
-          <div class="info">
-            <h3>${libro.titulo}</h3>
-            <p><strong>Autor:</strong> ${libro.autor}</p>
-            <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
-            <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
-            <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
-            <p>${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
-            ${
-              rolUsuario === "ADMIN"
-                ? `<div class="acciones">
-                     <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
-                     <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
-                     ${disponible ? `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : `<button class="boton-reservar" disabled>📚 Agotado</button>`}
-                   </div>`
-                : `${disponible ? `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : `<button class="boton-reservar" disabled>📚 Agotado</button>`}`
-            }
-          </div>
-        `;
+    // Verificar si es favorito
+const yaEsFavorito = esFavorito(libro.id);
+
+card.innerHTML = `
+  <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
+  <div class="info">
+    <h3>${libro.titulo}</h3>
+    <p><strong>Autor:</strong> ${libro.autor}</p>
+    <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
+    <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
+    <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
+    <p>${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
+    
+    <div class="acciones-libro">
+      <!-- Botón de favorito (siempre visible) -->
+      <button class="boton-favorito ${yaEsFavorito ? 'favorito-activo' : ''}" 
+              data-favorito-id="${libro.id}" 
+              onclick="toggleFavorito(${libro.id})"
+              title="${yaEsFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
+        <i class="${yaEsFavorito ? 'fas' : 'far'} fa-heart"></i>
+      </button>
+      
+      ${
+        rolUsuario === "ADMIN"
+          ? `<div class="acciones-admin">
+               <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
+               <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+             </div>`
+          : ``
+      }
+      
+      <!-- Botón de reservar -->
+      ${disponible ? 
+        `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : 
+        `<button class="boton-reservar" disabled>📚 Agotado</button>`
+      }
+    </div>
+  </div>
+`;
 
         // 👇 Evento de click en la tarjeta (modal de detalles)
         card.addEventListener("click", (e) => {
