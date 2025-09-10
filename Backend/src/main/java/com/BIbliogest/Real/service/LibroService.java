@@ -91,4 +91,8 @@ public class LibroService {
             return false;
         }
     }
+
+    public Optional<Libro> obtenerPorId(Long id) {
+        return Optional.empty();
+    }
 }

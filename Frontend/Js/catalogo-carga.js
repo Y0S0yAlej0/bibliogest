@@ -448,9 +448,26 @@ card.innerHTML = `
 `;
 
         // 👇 Evento de click en la tarjeta (modal de detalles)
-        card.addEventListener("click", (e) => {
-          if (e.target.closest(".acciones")) return;
-          
+    card.addEventListener("click", (e) => {
+  // Lista de selectores a evitar
+  const selectoresEvitar = [
+    '.acciones-libro',
+    '.boton-editar', 
+    '.boton-eliminar', 
+    '.boton-reservar', 
+    '.boton-favorito',
+    '.acciones-admin',
+    'button' // Cualquier botón
+  ];
+  
+  // Verificar si el click fue en algún elemento a evitar
+  const clicEnAccion = selectoresEvitar.some(selector => 
+    e.target.closest(selector)
+  );
+  
+  if (clicEnAccion) {
+    return; // No abrir el modal de detalles
+  }
           Swal.fire({
             title: libro.titulo,
             html: `
@@ -550,41 +567,227 @@ card.innerHTML = `
       });
     });
 
-    // Eventos de eliminar (sin cambios)
-    botonesEliminar.forEach(boton => {
-      boton.addEventListener("click", async function () {
-        const id = this.getAttribute("data-id");
+botonesEliminar.forEach(boton => {
+  boton.addEventListener("click", async function () {
+    const id = this.getAttribute("data-id");
+    
+    if (!id || id === 'null' || id === 'undefined') {
+      Swal.fire("❌ Error", "ID del libro no válido", "error");
+      return;
+    }
 
-        const confirmacion = await Swal.fire({
-          title: "¿Estás seguro?",
-          text: "Esta acción eliminará el libro.",
-          icon: "warning",
-          background: "#1e1e1e",
-          color: "#f5f5f5",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar"
-        });
-
-        if (confirmacion.isConfirmed) {
-          try {
-            const response = await fetch(`http://localhost:8080/api/libros/${id}`, {
-              method: "DELETE"
-            });
-
-            if (!response.ok) throw new Error("Error al eliminar el libro");
-
-            Swal.fire("Eliminado", "El libro fue eliminado.", "success");
-            cargarLibros();
-          } catch (error) {
-            console.error(error);
-            Swal.fire("Error", "No se pudo eliminar el libro.", "error");
+    // 🔍 Obtener el título del libro desde la tarjeta para personalizar el mensaje
+    const card = this.closest(".card");
+    const titulo = card ? card.querySelector("h3")?.textContent || "este libro" : "este libro";
+    
+    // 🔍 CONFIRMACIÓN con el mensaje exacto que pediste
+    const confirmacion = await Swal.fire({
+      title: "⚠️ ¿Estás seguro?",
+      html: `
+        <div style="text-align: center; font-size: 1.1rem; line-height: 1.6;">
+          <p style="margin-bottom: 20px;">
+            <strong>¿Seguro que quieres eliminar el libro?</strong>
+          </p>
+          
+          <div style="background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545; border-radius: 10px; padding: 20px; margin: 20px 0;">
+            <p style="color: #dc3545; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">
+              ⚠️ SE BORRARÁ TODA LA INFORMACIÓN Y LAS RESERVAS HECHAS
+            </p>
+            <div style="text-align: left; margin: 15px 0;">
+              <p>📚 <strong>Libro:</strong> "${titulo}"</p>
+              <p>🗑️ <strong>Todas las reservas asociadas</strong></p>
+              <p>📊 <strong>Todo el historial relacionado</strong></p>
+            </div>
+          </div>
+          
+          <p style="color: #6c757d; font-style: italic; margin-top: 15px;">
+            Esta acción no se puede deshacer
+          </p>
+        </div>
+      `,
+      icon: "warning",
+      background: "#1a1a2e",
+      color: "#e4e6ea",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "🗑️ Sí, eliminar todo",
+      cancelButtonText: "❌ Cancelar",
+      width: "500px",
+      customClass: {
+        popup: "swal-delete-custom",
+        confirmButton: "swal-delete-confirm",
+        cancelButton: "swal-delete-cancel"
+      },
+      didOpen: () => {
+        const style = document.createElement('style');
+        style.textContent = `
+          .swal-delete-custom {
+            border: 2px solid #dc3545 !important;
+            box-shadow: 0 0 30px rgba(220, 53, 69, 0.3) !important;
           }
+          
+          .swal-delete-confirm {
+            font-weight: 700 !important;
+            font-size: 1rem !important;
+            padding: 12px 30px !important;
+            transition: all 0.3s ease !important;
+          }
+          
+          .swal-delete-confirm:hover {
+            background-color: #c82333 !important;
+            transform: scale(1.05) !important;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4) !important;
+          }
+          
+          .swal-delete-cancel {
+            font-weight: 600 !important;
+            padding: 12px 30px !important;
+          }
+          
+          .swal-delete-cancel:hover {
+            background-color: #5a6268 !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    });
+
+    if (confirmacion.isConfirmed) {
+      // 🔄 Mostrar loading mientras elimina
+      Swal.fire({
+        title: "🗑️ Eliminando...",
+        html: `
+          <div style="text-align: center;">
+            <p>Eliminando "${titulo}"</p>
+            <p style="color: #6c757d; font-size: 0.9rem;">Esto puede tomar unos momentos...</p>
+          </div>
+        `,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        background: "#1a1a2e",
+        color: "#e4e6ea",
+        didOpen: () => {
+          Swal.showLoading();
         }
       });
-    });
+
+      try {
+        // 🔧 INTENTAR DIFERENTES MÉTODOS DE ELIMINACIÓN
+        
+        // Método 1: DELETE simple (el que sabemos que existe)
+        let response = await fetch(`http://localhost:8080/api/libros/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (response.ok) {
+          // ✅ ÉXITO - Eliminación exitosa
+          Swal.fire({
+            title: "✅ ¡Eliminado exitosamente!",
+            html: `
+              <div style="text-align: center;">
+                <div style="background: rgba(40, 167, 69, 0.1); border: 2px solid #28a745; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                  <p style="color: #28a745; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">
+                    🎉 ELIMINACIÓN COMPLETADA
+                  </p>
+                  <div style="text-align: left; margin: 15px 0;">
+                    <p>✅ <strong>Libro eliminado:</strong> "${titulo}"</p>
+                    <p>✅ <strong>Reservas asociadas eliminadas</strong></p>
+                    <p>✅ <strong>Base de datos actualizada</strong></p>
+                  </div>
+                </div>
+                <p style="color: #6c757d; font-style: italic;">
+                  La información ha sido eliminada permanentemente
+                </p>
+              </div>
+            `,
+            icon: "success",
+            confirmButtonText: "Perfecto",
+            confirmButtonColor: "#28a745",
+            background: "#1a1a2e",
+            color: "#e4e6ea",
+            timer: 4000,
+            timerProgressBar: true
+          });
+
+          // Recargar la lista de libros
+          cargarLibros();
+
+        } else {
+          // ❌ ERROR - Manejar diferentes tipos de error
+          const errorText = await response.text();
+          console.error("Error del servidor:", errorText);
+
+          if (response.status === 400 && errorText.includes("foreign key")) {
+            // Error de restricción - probablemente hay reservas
+            Swal.fire({
+              title: "⚠️ No se puede eliminar directamente",
+              html: `
+                <div style="text-align: center;">
+                  <div style="background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <p style="color: #ffc107; font-weight: 600; margin-bottom: 15px;">
+                      📚 Este libro tiene reservas activas
+                    </p>
+                    <p>El sistema protege la integridad de los datos y no permite eliminar libros con reservas asociadas.</p>
+                  </div>
+                  
+                  <p><strong>¿Qué puedes hacer?</strong></p>
+                  <div style="text-align: left; margin: 15px 0; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px;">
+                    <p>🔧 <strong>Opción 1:</strong> Cancelar manualmente las reservas primero</p>
+                    <p>🔧 <strong>Opción 2:</strong> Contactar al administrador del sistema</p>
+                    <p>🔧 <strong>Opción 3:</strong> Marcar el libro como "no disponible"</p>
+                  </div>
+                </div>
+              `,
+              icon: "warning",
+              confirmButtonText: "Entendido",
+              background: "#1a1a2e",
+              color: "#e4e6ea",
+              width: "600px"
+            });
+          } else {
+            // Otro tipo de error
+            throw new Error(`Error ${response.status}: ${errorText || 'Error desconocido'}`);
+          }
+        }
+
+      } catch (error) {
+        console.error("❌ Error completo:", error);
+        
+        Swal.fire({
+          title: "❌ Error al eliminar",
+          html: `
+            <div style="text-align: center;">
+              <div style="background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <p style="color: #dc3545; font-weight: 600; margin-bottom: 15px;">
+                  ❌ NO SE PUDO COMPLETAR LA ELIMINACIÓN
+                </p>
+                <p><strong>Error:</strong> ${error.message}</p>
+              </div>
+              
+              <div style="text-align: left; margin: 15px 0; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px;">
+                <p><strong>Posibles causas:</strong></p>
+                <p>🔗 El libro tiene reservas o préstamos activos</p>
+                <p>🌐 Problemas de conectividad con el servidor</p>
+                <p>🔒 Restricciones de permisos</p>
+                <p>🗃️ Restricciones de la base de datos</p>
+              </div>
+            </div>
+          `,
+          icon: "error",
+          confirmButtonText: "Entendido",
+          background: "#1a1a2e",
+          color: "#e4e6ea",
+          width: "600px"
+        });
+      }
+    }
+  });
+});
 
     // MODAL DE EDICIÓN ACTUALIZADO
     botonesEditar.forEach(boton => {
