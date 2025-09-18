@@ -567,20 +567,68 @@ card.innerHTML = `
       });
     });
 
+// 🔧 FUNCIÓN DE ELIMINACIÓN MEJORADA CON VERIFICACIONES
+
 botonesEliminar.forEach(boton => {
   boton.addEventListener("click", async function () {
     const id = this.getAttribute("data-id");
     
+    // ✅ VERIFICACIÓN 1: ID válido
     if (!id || id === 'null' || id === 'undefined') {
       Swal.fire("❌ Error", "ID del libro no válido", "error");
       return;
     }
 
-    // 🔍 Obtener el título del libro desde la tarjeta para personalizar el mensaje
+    console.log(`🔍 Intentando eliminar libro ID: ${id}`);
+
+    // ✅ VERIFICACIÓN 2: El libro existe en el servidor
+    try {
+      const verificarResponse = await fetch(`http://localhost:8080/api/libros/${id}`);
+      
+      if (!verificarResponse.ok) {
+        console.log(`❌ Libro ID ${id} no encontrado en servidor`);
+        
+        Swal.fire({
+          title: "⚠️ Libro no encontrado",
+          html: `
+            <div style="text-align: center;">
+              <p>El libro con ID <strong>${id}</strong> ya no existe en el servidor.</p>
+              <hr style="margin: 20px 0; border: 1px solid #444;">
+              <p>Esto puede ocurrir por:</p>
+              <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                <li>📚 El libro ya fue eliminado previamente</li>
+                <li>🔄 Datos desactualizados en la página</li>
+                <li>🔧 Problemas de sincronización</li>
+              </ul>
+              <p style="margin-top: 20px;"><em>Actualizando la lista de libros...</em></p>
+            </div>
+          `,
+          icon: "info",
+          confirmButtonText: "Entendido",
+          background: "#1a1a2e",
+          color: "#e4e6ea"
+        }).then(() => {
+          // Recargar libros para sincronizar
+          cargarLibros();
+        });
+        return;
+      }
+
+      // Si llegamos aquí, el libro existe
+      const libroData = await verificarResponse.json();
+      console.log("✅ Libro encontrado:", libroData);
+
+    } catch (error) {
+      console.error("❌ Error al verificar libro:", error);
+      Swal.fire("❌ Error de conexión", "No se puede verificar si el libro existe", "error");
+      return;
+    }
+
+    // ✅ VERIFICACIÓN 3: Obtener datos del libro para personalizar el mensaje
     const card = this.closest(".card");
     const titulo = card ? card.querySelector("h3")?.textContent || "este libro" : "este libro";
     
-    // 🔍 CONFIRMACIÓN con el mensaje exacto que pediste
+    // ✅ CONFIRMACIÓN (tu código existente)
     const confirmacion = await Swal.fire({
       title: "⚠️ ¿Estás seguro?",
       html: `
@@ -595,6 +643,7 @@ botonesEliminar.forEach(boton => {
             </p>
             <div style="text-align: left; margin: 15px 0;">
               <p>📚 <strong>Libro:</strong> "${titulo}"</p>
+              <p>🔢 <strong>ID:</strong> ${id}</p>
               <p>🗑️ <strong>Todas las reservas asociadas</strong></p>
               <p>📊 <strong>Todo el historial relacionado</strong></p>
             </div>
@@ -613,54 +662,17 @@ botonesEliminar.forEach(boton => {
       cancelButtonColor: "#6c757d",
       confirmButtonText: "🗑️ Sí, eliminar todo",
       cancelButtonText: "❌ Cancelar",
-      width: "500px",
-      customClass: {
-        popup: "swal-delete-custom",
-        confirmButton: "swal-delete-confirm",
-        cancelButton: "swal-delete-cancel"
-      },
-      didOpen: () => {
-        const style = document.createElement('style');
-        style.textContent = `
-          .swal-delete-custom {
-            border: 2px solid #dc3545 !important;
-            box-shadow: 0 0 30px rgba(220, 53, 69, 0.3) !important;
-          }
-          
-          .swal-delete-confirm {
-            font-weight: 700 !important;
-            font-size: 1rem !important;
-            padding: 12px 30px !important;
-            transition: all 0.3s ease !important;
-          }
-          
-          .swal-delete-confirm:hover {
-            background-color: #c82333 !important;
-            transform: scale(1.05) !important;
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4) !important;
-          }
-          
-          .swal-delete-cancel {
-            font-weight: 600 !important;
-            padding: 12px 30px !important;
-          }
-          
-          .swal-delete-cancel:hover {
-            background-color: #5a6268 !important;
-          }
-        `;
-        document.head.appendChild(style);
-      }
+      width: "500px"
     });
 
     if (confirmacion.isConfirmed) {
-      // 🔄 Mostrar loading mientras elimina
+      // ✅ LOADING
       Swal.fire({
         title: "🗑️ Eliminando...",
         html: `
           <div style="text-align: center;">
-            <p>Eliminando "${titulo}"</p>
-            <p style="color: #6c757d; font-size: 0.9rem;">Esto puede tomar unos momentos...</p>
+            <p>Eliminando "${titulo}" (ID: ${id})</p>
+            <p style="color: #6c757d; font-size: 0.9rem;">Verificando con el servidor...</p>
           </div>
         `,
         allowOutsideClick: false,
@@ -674,18 +686,22 @@ botonesEliminar.forEach(boton => {
       });
 
       try {
-        // 🔧 INTENTAR DIFERENTES MÉTODOS DE ELIMINACIÓN
+        console.log(`🚀 Enviando DELETE a: http://localhost:8080/api/libros/${id}`);
         
-        // Método 1: DELETE simple (el que sabemos que existe)
-        let response = await fetch(`http://localhost:8080/api/libros/${id}`, {
+        const response = await fetch(`http://localhost:8080/api/libros/${id}`, {
           method: "DELETE",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           }
         });
 
+        console.log(`📊 Respuesta del servidor: ${response.status} ${response.statusText}`);
+
         if (response.ok) {
-          // ✅ ÉXITO - Eliminación exitosa
+          // ✅ ÉXITO
+          console.log("✅ Libro eliminado exitosamente");
+          
           Swal.fire({
             title: "✅ ¡Eliminado exitosamente!",
             html: `
@@ -696,13 +712,10 @@ botonesEliminar.forEach(boton => {
                   </p>
                   <div style="text-align: left; margin: 15px 0;">
                     <p>✅ <strong>Libro eliminado:</strong> "${titulo}"</p>
-                    <p>✅ <strong>Reservas asociadas eliminadas</strong></p>
+                    <p>✅ <strong>ID eliminado:</strong> ${id}</p>
                     <p>✅ <strong>Base de datos actualizada</strong></p>
                   </div>
                 </div>
-                <p style="color: #6c757d; font-style: italic;">
-                  La información ha sido eliminada permanentemente
-                </p>
               </div>
             `,
             icon: "success",
@@ -710,72 +723,77 @@ botonesEliminar.forEach(boton => {
             confirmButtonColor: "#28a745",
             background: "#1a1a2e",
             color: "#e4e6ea",
-            timer: 4000,
+            timer: 3000,
             timerProgressBar: true
           });
 
-          // Recargar la lista de libros
+          // Recargar libros
           cargarLibros();
 
         } else {
-          // ❌ ERROR - Manejar diferentes tipos de error
+          // ❌ ERROR DEL SERVIDOR
           const errorText = await response.text();
-          console.error("Error del servidor:", errorText);
+          console.error(`❌ Error del servidor (${response.status}):`, errorText);
 
-          if (response.status === 400 && errorText.includes("foreign key")) {
-            // Error de restricción - probablemente hay reservas
-            Swal.fire({
-              title: "⚠️ No se puede eliminar directamente",
-              html: `
-                <div style="text-align: center;">
-                  <div style="background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                    <p style="color: #ffc107; font-weight: 600; margin-bottom: 15px;">
-                      📚 Este libro tiene reservas activas
-                    </p>
-                    <p>El sistema protege la integridad de los datos y no permite eliminar libros con reservas asociadas.</p>
-                  </div>
-                  
-                  <p><strong>¿Qué puedes hacer?</strong></p>
-                  <div style="text-align: left; margin: 15px 0; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px;">
-                    <p>🔧 <strong>Opción 1:</strong> Cancelar manualmente las reservas primero</p>
-                    <p>🔧 <strong>Opción 2:</strong> Contactar al administrador del sistema</p>
-                    <p>🔧 <strong>Opción 3:</strong> Marcar el libro como "no disponible"</p>
-                  </div>
-                </div>
-              `,
-              icon: "warning",
-              confirmButtonText: "Entendido",
-              background: "#1a1a2e",
-              color: "#e4e6ea",
-              width: "600px"
-            });
+          // Manejar diferentes tipos de error
+          let mensajeError = "";
+          
+          if (response.status === 404) {
+            mensajeError = `
+              <div style="background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 10px; padding: 20px;">
+                <p style="color: #ffc107; font-weight: 600;">📚 El libro ya no existe</p>
+                <p>El libro fue eliminado previamente o no se encuentra en la base de datos.</p>
+              </div>
+            `;
+          } else if (response.status === 400 && errorText.includes("foreign key")) {
+            mensajeError = `
+              <div style="background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 10px; padding: 20px;">
+                <p style="color: #ffc107; font-weight: 600;">🔗 El libro tiene reservas activas</p>
+                <p>No se puede eliminar porque tiene reservas o préstamos asociados.</p>
+              </div>
+            `;
           } else {
-            // Otro tipo de error
-            throw new Error(`Error ${response.status}: ${errorText || 'Error desconocido'}`);
+            mensajeError = `
+              <div style="background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545; border-radius: 10px; padding: 20px;">
+                <p style="color: #dc3545; font-weight: 600;">❌ Error del servidor</p>
+                <p><strong>Código:</strong> ${response.status}</p>
+                <p><strong>Mensaje:</strong> ${errorText}</p>
+              </div>
+            `;
           }
+
+          Swal.fire({
+            title: "❌ No se pudo eliminar",
+            html: mensajeError,
+            icon: "error",
+            confirmButtonText: "Entendido",
+            background: "#1a1a2e",
+            color: "#e4e6ea",
+            width: "600px"
+          }).then(() => {
+            // Recargar libros para sincronizar
+            cargarLibros();
+          });
         }
 
       } catch (error) {
-        console.error("❌ Error completo:", error);
+        console.error("❌ Error de red/conexión:", error);
         
         Swal.fire({
-          title: "❌ Error al eliminar",
+          title: "❌ Error de conexión",
           html: `
             <div style="text-align: center;">
               <div style="background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                <p style="color: #dc3545; font-weight: 600; margin-bottom: 15px;">
-                  ❌ NO SE PUDO COMPLETAR LA ELIMINACIÓN
-                </p>
+                <p style="color: #dc3545; font-weight: 600;">🌐 Sin conexión al servidor</p>
                 <p><strong>Error:</strong> ${error.message}</p>
               </div>
               
-              <div style="text-align: left; margin: 15px 0; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px;">
-                <p><strong>Posibles causas:</strong></p>
-                <p>🔗 El libro tiene reservas o préstamos activos</p>
-                <p>🌐 Problemas de conectividad con el servidor</p>
-                <p>🔒 Restricciones de permisos</p>
-                <p>🗃️ Restricciones de la base de datos</p>
-              </div>
+              <p><strong>Posibles soluciones:</strong></p>
+              <ul style="text-align: left; margin: 15px 0;">
+                <li>🔄 Verificar que el servidor esté ejecutándose</li>
+                <li>🌐 Comprobar la conexión a internet</li>
+                <li>🔧 Revisar la URL del API</li>
+              </ul>
             </div>
           `,
           icon: "error",
@@ -788,7 +806,6 @@ botonesEliminar.forEach(boton => {
     }
   });
 });
-
     // MODAL DE EDICIÓN ACTUALIZADO
     botonesEditar.forEach(boton => {
       boton.addEventListener("click", function () {

@@ -24,6 +24,12 @@ public class LibroService {
         return libroRepository.findAll();
     }
 
+    // 🔧 MÉTODO CORREGIDO: Obtener libro por ID
+    public Optional<Libro> obtenerPorId(Long id) {
+        // ✅ CORREGIDO: Usar el repositorio para buscar por ID
+        return libroRepository.findById(id);
+    }
+
     // Actualizar libro
     public Optional<Libro> actualizar(Long id, Libro libroActualizado) {
         Optional<Libro> libroExistente = libroRepository.findById(id);
@@ -92,7 +98,8 @@ public class LibroService {
         }
     }
 
-    public Optional<Libro> obtenerPorId(Long id) {
-        return Optional.empty();
+    // 🔧 MÉTODO ADICIONAL: Verificar si un libro existe
+    public boolean existe(Long id) {
+        return libroRepository.existsById(id);
     }
 }

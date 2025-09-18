@@ -17,18 +17,37 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByUsuario(Usuario usuario);
     List<Reserva> findByUsuarioAndLibroAndEstadoIn(Usuario usuario, Libro libro, List<String> estados);
 
-    // 🔧 NUEVOS MÉTODOS NECESARIOS PARA ELIMINACIÓN EN CASCADA
+    // 🔧 MÉTODOS CORREGIDOS PARA ELIMINACIÓN EN CASCADA
 
-    // Método 1: Eliminar todas las reservas de un libro específico
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Reserva r WHERE r.libro.id = :libroId")
-    int deleteByLibroId(@Param("libroId") Long libroId);
+    // ✅ Método 1: Obtener todas las reservas de un libro específico (SEGURO)
+    @Query("SELECT r FROM Reserva r WHERE r.libro.id = :libroId")
+    List<Reserva> findByLibroId(@Param("libroId") Long libroId);
 
-    // Método 2: Contar reservas de un libro específico (opcional, para logging)
+    // ✅ Método 2: Contar reservas de un libro específico (SEGURO)
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.libro.id = :libroId")
     long countByLibroId(@Param("libroId") Long libroId);
 
-    // Método 3: Obtener todas las reservas de un libro específico (opcional, para verificación)
-    @Query("SELECT r FROM Reserva r WHERE r.libro.id = :libroId")
-    List<Reserva> findByLibroId(@Param("libroId") Long libroId);}
+    // ❌ REMOVIDO: El método deleteByLibroId que causaba problemas
+    // @Modifying
+    // @Transactional
+    // @Query("DELETE FROM Reserva r WHERE r.libro.id = :libroId")
+    // int deleteByLibroId(@Param("libroId") Long libroId);
+
+    // 🆕 NUEVOS MÉTODOS ALTERNATIVOS MÁS SEGUROS:
+
+    // ✅ Método 3: Eliminar usando SQL nativo (más directo)
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM reservas WHERE libro_id = :libroId", nativeQuery = true)
+    int deleteByLibroIdNative(@Param("libroId") Long libroId);
+
+    // ✅ Método 4: Marcar reservas como eliminadas en lugar de borrarlas físicamente (alternativa)
+    @Modifying
+    @Transactional
+    @Query("UPDATE Reserva r SET r.estado = 'eliminada' WHERE r.libro.id = :libroId")
+    int markAsDeletedByLibroId(@Param("libroId") Long libroId);
+
+    // 🔧 Método 5: Para obtener reservas de un libro específico con información completa
+    @Query("SELECT r FROM Reserva r JOIN FETCH r.usuario JOIN FETCH r.libro WHERE r.libro.id = :libroId")
+    List<Reserva> findByLibroIdWithDetails(@Param("libroId") Long libroId);
+}

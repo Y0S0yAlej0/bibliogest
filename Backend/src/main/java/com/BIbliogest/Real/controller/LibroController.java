@@ -1,12 +1,11 @@
 package com.BIbliogest.Real.controller;
 
 import com.BIbliogest.Real.model.Libro;
-import com.BIbliogest.Real.model.Reserva;
 import com.BIbliogest.Real.service.LibroService;
-import com.BIbliogest.Real.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +16,35 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/libros")
-@CrossOrigin(origins = "http://127.0.0.1:5500") // Permitir peticiones desde Live Server
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class LibroController {
 
     @Autowired
     private LibroService servicio;
 
     @Autowired
-    private ReservaRepository reservaRepository;
+    private JdbcTemplate jdbcTemplate; // Para operaciones SQL directas
 
     // Obtener todos los libros
     @GetMapping
     public List<Libro> obtenerLibros() {
         return servicio.obtenerTodos();
+    }
+
+    // Obtener un libro específico por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerLibroPorId(@PathVariable Long id) {
+        try {
+            Optional<Libro> libro = servicio.obtenerPorId(id);
+            if (libro.isPresent()) {
+                return ResponseEntity.ok(libro.get());
+            } else {
+                return ResponseEntity.status(404).body("❌ Libro no encontrado con ID: " + id);
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener libro ID " + id + ": " + e.getMessage());
+            return ResponseEntity.status(500).body("Error interno del servidor");
+        }
     }
 
     // Crear un nuevo libro
@@ -56,182 +71,213 @@ public class LibroController {
         }
     }
 
-    // 🔧 MÉTODO DELETE ACTUALIZADO CON ELIMINACIÓN EN CASCADA
+
     @DeleteMapping("/{id}")
-    @Transactional  // Importante: asegura que todo se haga en una transacción
+    @Transactional
     public ResponseEntity<?> eliminarLibro(@PathVariable Long id) {
         try {
-            // 🔍 PASO 1: Verificar que el libro existe usando el servicio
-            Optional<Libro> libroOpt = servicio.obtenerPorId(id);
-            if (!libroOpt.isPresent()) {
+            System.out.println("🚀 Iniciando eliminación con JDBC directo para libro ID: " + id);
+
+            // 🔍 PASO 1: Verificar que el libro existe usando JDBC directo
+            String sqlVerificar = "SELECT id, titulo, autor FROM libro WHERE id = ?";
+            List<Map<String, Object>> libros = jdbcTemplate.queryForList(sqlVerificar, id);
+
+            if (libros.isEmpty()) {
+                System.out.println("❌ Libro no encontrado: ID " + id);
                 return ResponseEntity.status(404).body("❌ Libro no encontrado para eliminar.");
             }
 
-            Libro libro = libroOpt.get();
-            String tituloLibro = libro.getTitulo();
+            Map<String, Object> libroData = libros.get(0);
+            String titulo = (String) libroData.get("titulo");
+            String autor = (String) libroData.get("autor");
 
-            // 🔍 PASO 2: Contar y obtener información de las reservas
-            long reservasCount = reservaRepository.countByLibroId(id);
-            System.out.println("📊 Libro '" + tituloLibro + "' (ID: " + id + ") tiene " + reservasCount + " reserva(s) asociada(s)");
+            System.out.println("📚 Libro encontrado: '" + titulo + "' por " + autor);
 
-            // 🗑️ PASO 3: Eliminar todas las reservas asociadas al libro
-            int reservasEliminadas = 0;
-            if (reservasCount > 0) {
-                reservasEliminadas = reservaRepository.deleteByLibroId(id);
-                System.out.println("🗑️ Eliminadas " + reservasEliminadas + " reserva(s) del libro: " + tituloLibro);
+            // 🔍 PASO 2: Obtener información de reservas usando JDBC directo
+            String sqlContarReservas = "SELECT COUNT(*) FROM reservas WHERE libro_id = ?";
+            Integer reservasCount = jdbcTemplate.queryForObject(sqlContarReservas, Integer.class, id);
+
+            System.out.println("📊 Reservas encontradas: " + reservasCount);
+
+            // Obtener detalles de las reservas antes de eliminar
+            String sqlDetalleReservas = """
+                SELECT r.id, r.estado, r.fecha_reserva, u.nombre 
+                FROM reservas r 
+                JOIN usuario u ON r.usuario_id = u.id 
+                WHERE r.libro_id = ?
+            """;
+
+            List<Map<String, Object>> reservasDetalle = jdbcTemplate.queryForList(sqlDetalleReservas, id);
+
+            for (Map<String, Object> reserva : reservasDetalle) {
+                System.out.println("   - Reserva ID: " + reserva.get("id") +
+                        " | Usuario: " + reserva.get("nombre") +
+                        " | Estado: " + reserva.get("estado"));
             }
 
-            // 🗑️ PASO 4: Ahora eliminar el libro usando el servicio
-            boolean eliminado = servicio.eliminar(id);
+            // 🗑️ PASO 3: Eliminar reservas usando JDBC directo (sin Hibernate)
+            int reservasEliminadas = 0;
+            if (reservasCount > 0) {
+                String sqlEliminarReservas = "DELETE FROM reservas WHERE libro_id = ?";
+                reservasEliminadas = jdbcTemplate.update(sqlEliminarReservas, id);
+                System.out.println("✅ Eliminadas " + reservasEliminadas + " reservas usando JDBC directo");
+            }
 
-            if (eliminado) {
-                System.out.println("📚 Libro eliminado exitosamente: " + tituloLibro + " (ID: " + id + ")");
+            // 🗑️ PASO 4: Eliminar el libro usando JDBC directo
+            String sqlEliminarLibro = "DELETE FROM libro WHERE id = ?";
+            int librosEliminados = jdbcTemplate.update(sqlEliminarLibro, id);
 
-                // ✅ Respuesta de éxito con información detallada
+            if (librosEliminados > 0) {
+                System.out.println("✅ ELIMINACIÓN COMPLETADA: '" + titulo + "' (ID: " + id + ")");
+
+                // 📤 Respuesta de éxito
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
-                response.put("mensaje", "Libro y reservas eliminados exitosamente");
-                response.put("libroId", id);
-                response.put("titulo", tituloLibro);
-                response.put("autor", libro.getAutor());
-                response.put("reservasEliminadas", reservasEliminadas);
-                response.put("detalles", "Eliminación en cascada completada correctamente");
+                response.put("mensaje", "✅ Libro y reservas eliminados exitosamente usando JDBC directo");
+
+                response.put("libroEliminado", Map.of(
+                        "id", id,
+                        "titulo", titulo,
+                        "autor", autor
+                ));
+
+                response.put("estadisticas", Map.of(
+                        "reservasEncontradas", reservasCount,
+                        "reservasEliminadas", reservasEliminadas,
+                        "librosEliminados", librosEliminados,
+                        "metodo", "JDBC_DIRECTO"
+                ));
+
+                response.put("reservasEliminadas", reservasDetalle);
 
                 return ResponseEntity.ok(response);
             } else {
-                // Si el servicio no pudo eliminar el libro
-                Map<String, Object> error = new HashMap<>();
-                error.put("success", false);
-                error.put("error", "No se pudo eliminar el libro después de eliminar las reservas");
-                error.put("libroId", id);
-
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+                System.err.println("❌ No se pudo eliminar el libro");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                        "success", false,
+                        "error", "No se pudo eliminar el libro",
+                        "reservasEliminadas", reservasEliminadas
+                ));
             }
 
         } catch (Exception e) {
-            // 📝 Log detallado del error
-            System.err.println("❌ Error al eliminar libro ID " + id + ": " + e.getMessage());
+            System.err.println("❌ ERROR con JDBC directo: " + e.getMessage());
             e.printStackTrace();
 
-            // 📤 Respuesta de error detallada
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("error", "Error al eliminar el libro");
-            error.put("detalle", e.getMessage());
-            error.put("libroId", id);
-            error.put("tipo", e.getClass().getSimpleName());
-
-            // Verificar si es un error de restricción de clave foránea
-            if (e.getMessage() != null && e.getMessage().contains("foreign key constraint")) {
-                error.put("causa", "El libro tiene reservas asociadas que impiden su eliminación");
-                error.put("solucion", "Intenta nuevamente - el sistema intentará eliminar las reservas automáticamente");
-            }
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "error", "Error al eliminar con JDBC directo",
+                    "detalle", e.getMessage(),
+                    "tipo", e.getClass().getSimpleName()
+            ));
         }
     }
 
-    // 🔧 MÉTODO AUXILIAR: Obtener información de reservas de un libro (para debugging)
+    // 🔧 MÉTODO AUXILIAR: Ver reservas con JDBC directo
     @GetMapping("/{id}/reservas")
     public ResponseEntity<?> obtenerReservasDeLibro(@PathVariable Long id) {
         try {
-            // Verificar que el libro existe
-            Optional<Libro> libroOpt = servicio.obtenerPorId(id);
-            if (!libroOpt.isPresent()) {
-                return ResponseEntity.notFound().build();
+            // Verificar libro
+            String sqlLibro = "SELECT id, titulo, autor FROM libro WHERE id = ?";
+            List<Map<String, Object>> libros = jdbcTemplate.queryForList(sqlLibro, id);
+
+            if (libros.isEmpty()) {
+                return ResponseEntity.status(404).body("❌ Libro no encontrado");
             }
 
+            Map<String, Object> libro = libros.get(0);
+
             // Obtener reservas
-            List<Reserva> reservas = reservaRepository.findByLibroId(id);
-            long count = reservaRepository.countByLibroId(id);
+            String sqlReservas = """
+                SELECT r.id, r.estado, r.fecha_reserva, r.fecha_aprobacion, 
+                       u.id as usuario_id, u.nombre as usuario_nombre
+                FROM reservas r 
+                JOIN usuario u ON r.usuario_id = u.id 
+                WHERE r.libro_id = ?
+                ORDER BY r.fecha_reserva DESC
+            """;
+
+            List<Map<String, Object>> reservas = jdbcTemplate.queryForList(sqlReservas, id);
 
             Map<String, Object> response = new HashMap<>();
             response.put("libroId", id);
-            response.put("titulo", libroOpt.get().getTitulo());
-            response.put("totalReservas", count);
+            response.put("titulo", libro.get("titulo"));
+            response.put("autor", libro.get("autor"));
+            response.put("totalReservas", reservas.size());
             response.put("reservas", reservas);
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al obtener reservas del libro");
-            error.put("detalle", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "error", "Error al obtener reservas",
+                    "detalle", e.getMessage()
+            ));
         }
     }
 
-    // 🔧 MÉTODO ALTERNATIVO: Eliminación forzada (por si necesitas debugging)
-    @DeleteMapping("/{id}/force")
-    @Transactional
-    public ResponseEntity<?> eliminarLibroForzado(@PathVariable Long id) {
+    // 🔧 MÉTODO DEBUG: Estado completo usando JDBC
+    @GetMapping("/{id}/debug-jdbc")
+    public ResponseEntity<?> debugLibroJdbc(@PathVariable Long id) {
         try {
-            System.out.println("🚀 Iniciando eliminación forzada para libro ID: " + id);
+            Map<String, Object> debug = new HashMap<>();
 
-            // Verificar existencia
-            Optional<Libro> libroOpt = servicio.obtenerPorId(id);
-            if (!libroOpt.isPresent()) {
-                return ResponseEntity.notFound().build();
+            // Verificar libro
+            String sqlLibro = "SELECT * FROM libro WHERE id = ?";
+            List<Map<String, Object>> libros = jdbcTemplate.queryForList(sqlLibro, id);
+
+            debug.put("libroExiste", !libros.isEmpty());
+            if (!libros.isEmpty()) {
+                debug.put("libro", libros.get(0));
             }
 
-            Libro libro = libroOpt.get();
+            // Contar reservas
+            String sqlContar = "SELECT COUNT(*) FROM reservas WHERE libro_id = ?";
+            Integer totalReservas = jdbcTemplate.queryForObject(sqlContar, Integer.class, id);
+            debug.put("totalReservas", totalReservas);
 
-            // Obtener información detallada
-            List<Reserva> reservasAEliminar = reservaRepository.findByLibroId(id);
+            // Detalles de reservas
+            String sqlReservas = """
+                SELECT r.*, u.nombre as usuario_nombre 
+                FROM reservas r 
+                LEFT JOIN usuario u ON r.usuario_id = u.id 
+                WHERE r.libro_id = ?
+            """;
+            List<Map<String, Object>> reservas = jdbcTemplate.queryForList(sqlReservas, id);
+            debug.put("reservasDetalle", reservas);
 
-            System.out.println("🔍 Información del libro a eliminar:");
-            System.out.println("   📚 Título: " + libro.getTitulo());
-            System.out.println("   👤 Autor: " + libro.getAutor());
-            System.out.println("   🗑️ Reservas asociadas: " + reservasAEliminar.size());
-
-            // Mostrar detalles de cada reserva
-            for (Reserva reserva : reservasAEliminar) {
-                System.out.println("     - Reserva ID: " + reserva.getId() +
-                        ", Usuario: " + reserva.getUsuario().getNombre() +
-                        ", Estado: " + reserva.getEstado());
-            }
-
-            // Eliminar reservas
-            int eliminadas = reservaRepository.deleteByLibroId(id);
-            System.out.println("✅ Eliminadas " + eliminadas + " reservas");
-
-            // Eliminar libro
-            boolean libroEliminado = servicio.eliminar(id);
-            System.out.println("✅ Libro eliminado: " + libroEliminado);
-
-            if (libroEliminado) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", true);
-                response.put("mensaje", "Eliminación forzada completada exitosamente");
-                response.put("libro", Map.of(
-                        "id", id,
-                        "titulo", libro.getTitulo(),
-                        "autor", libro.getAutor()
-                ));
-                response.put("reservasEliminadas", eliminadas);
-                response.put("reservasDetalle", reservasAEliminar.stream()
-                        .map(r -> Map.of(
-                                "id", r.getId(),
-                                "usuario", r.getUsuario().getNombre(),
-                                "estado", r.getEstado()
-                        )).toList());
-
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(Map.of("error", "No se pudo eliminar el libro después de eliminar las reservas"));
-            }
+            return ResponseEntity.ok(debug);
 
         } catch (Exception e) {
-            System.err.println("❌ Error en eliminación forzada: " + e.getMessage());
-            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Error en debug JDBC",
+                    "detalle", e.getMessage()
+            ));
+        }
+    }
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "error", "Error en eliminación forzada",
-                            "detalle", e.getMessage()
-                    ));
+    // 🧪 MÉTODO DE PRUEBA: Eliminar solo reservas
+    @DeleteMapping("/{id}/solo-reservas")
+    @Transactional
+    public ResponseEntity<?> eliminarSoloReservas(@PathVariable Long id) {
+        try {
+            System.out.println("🧪 Eliminando solo reservas del libro ID: " + id);
+
+            String sql = "DELETE FROM reservas WHERE libro_id = ?";
+            int eliminadas = jdbcTemplate.update(sql, id);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "mensaje", "Reservas eliminadas exitosamente",
+                    "reservasEliminadas", eliminadas,
+                    "metodo", "JDBC_DIRECTO"
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Error eliminando solo reservas",
+                    "detalle", e.getMessage()
+            ));
         }
     }
 }
