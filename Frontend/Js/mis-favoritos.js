@@ -43,22 +43,32 @@ document.addEventListener("DOMContentLoaded", function () {
     async function cargarLibros() {
         try {
             const response = await fetch("http://localhost:8080/api/libros");
-            if (response.ok) {
-                librosData = await response.json();
-                console.log("📚 Libros cargados:", librosData.length);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            librosData = await response.json();
+            console.log("📚 Libros cargados:", librosData.length);
+            
+            // Importante: Llamar a renderizarFavoritos después de cargar los libros
+            cargarFavoritos();
+            renderizarFavoritos();
         } catch (error) {
             console.error("❌ Error al cargar libros:", error);
+            Swal.fire({
+                title: 'Error al cargar libros',
+                text: 'No se pudieron cargar los libros. Por favor, intenta más tarde.',
+                icon: 'error'
+            });
         }
     }
 
     function cargarFavoritos() {
         const favoritosGuardados = localStorage.getItem(`favoritos_${usuario.id}`);
         favoritos = favoritosGuardados ? JSON.parse(favoritosGuardados) : [];
-        console.log("❤️ Favoritos cargados:", favoritos.length);
+        console.log("❤️ Favoritos cargados:", favoritos);
+        console.log("🔍 Favoritos datos:", favoritos);  // Para debug
         
         actualizarContadores();
-        renderizarFavoritos();
     }
 
     function guardarFavoritos() {
@@ -68,18 +78,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // === RENDERIZADO === //
     function renderizarFavoritos() {
-        if (!favoritosGrid || !noFavoritos) return;
+        if (!favoritosGrid || !noFavoritos) {
+            console.error("❌ No se encontraron elementos del DOM necesarios");
+            return;
+        }
+
+        console.log("📚 LibrosData disponible:", librosData);
+        console.log("❤️ Favoritos a renderizar:", favoritos);
 
         // Obtener favoritos con información completa de libros
         const favoritosCompletos = favoritos.map(fav => {
             const libro = librosData.find(l => l.id === fav.libroId);
+            console.log(`🔍 Buscando libro ${fav.libroId}:`, libro);
             return libro ? { ...fav, ...libro } : null;
         }).filter(Boolean);
 
+        console.log("✨ Favoritos completos:", favoritosCompletos);
+
         // Aplicar filtros
         const favoritosFiltrados = aplicarFiltros(favoritosCompletos);
+        console.log("🔍 Favoritos filtrados:", favoritosFiltrados);
 
         if (favoritosFiltrados.length === 0) {
+            console.log("⚠️ No hay favoritos para mostrar");
             mostrarMensajeSinFavoritos();
             return;
         }

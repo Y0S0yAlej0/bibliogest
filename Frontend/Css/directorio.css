@@ -469,49 +469,31 @@ button:disabled {
 }
 
 .boton-favorito {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #b0b3b8;
-  padding: 0.6rem;
-  border-radius: 50%;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 1.3rem;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-end;
-  position: relative;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 2;
+  padding: 8px;
+  font-size: 1.2rem;
+  color: #ccc;
+  transition: all 0.3s ease;
 }
 
 .boton-favorito:hover {
-  border-color: #ff6b9d;
-  color: #ff6b9d;
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+  color: #ff4757;
 }
 
 .boton-favorito.favorito-activo {
-  background: linear-gradient(135deg, #ff6b9d, #e91e63);
-  border-color: #ff6b9d;
-  color: white;
-  animation: heartPulse 0.6s ease;
-  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+  color: #ff4757;
 }
 
-.boton-favorito.favorito-activo:hover {
-  background: linear-gradient(135deg, #e91e63, #c2185b);
-  transform: scale(1.1);
+.boton-favorito.favorito-activo i {
+  animation: heartBeat 0.3s ease-in-out;
 }
 
-@keyframes heartPulse {
+@keyframes heartBeat {
   0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+  50% { transform: scale(1.3); }
   100% { transform: scale(1); }
 }
 
@@ -552,4 +534,100 @@ button:disabled {
     flex-direction: column;
     gap: 0.3rem;
   }
+}
+
+.boton-favorito {
+    background: transparent;
+    border: 2px solid #ff6b9d;
+    color: #ff6b9d;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    height: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-favorito:hover {
+    background: rgba(255, 107, 157, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+}
+
+.boton-favorito.favorito-activo {
+    background: linear-gradient(135deg, #ff6b9d, #ff4081);
+    color: #ffffff;
+    border-color: #ff4081;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);
+}
+
+.boton-favorito.favorito-activo:hover {
+    background: linear-gradient(135deg, #ff4081, #e91e63);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(255, 107, 157, 0.5);
+}
+
+.boton-favorito i {
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.boton-favorito:hover i {
+    transform: scale(1.2);
+}
+
+.boton-favorito.favorito-activo i {
+    animation: heartBeat 1s ease-in-out;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.3); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.3); }
+    70% { transform: scale(1); }
+}
+
+/* Animación cuando se agrega a favoritos */
+.boton-favorito.animate-add {
+    animation: favoriteAdd 0.6s ease-out;
+}
+
+@keyframes favoriteAdd {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Estilos para las acciones de libro */
+.acciones-libro {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.acciones-admin {
+    display: flex;
+    gap: 5px;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .acciones-libro {
+        justify-content: center;
+    }
+    
+    .boton-favorito {
+        min-width: 40px;
+        height: 36px;
+        padding: 6px 10px;
+    }
 }

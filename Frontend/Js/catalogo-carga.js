@@ -1,3 +1,6 @@
+// Mover librosData al scope global
+let librosData = [];  // Agregar esta línea al inicio del archivo, fuera del DOMContentLoaded
+
 document.addEventListener("DOMContentLoaded", function () {
 
   // Recuperar usuario logueado desde localStorage
@@ -15,6 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const usuarioId = usuario ? usuario.id : null;
 
 // === VARIABLES PARA FAVORITOS === //
+// === SECCIÓN DE FAVORITOS CORREGIDA PARA catalogo-carga.js === //
+// Reemplaza toda la sección de favoritos en tu archivo
+
+// === VARIABLES PARA FAVORITOS === //
 let favoritos = [];
 
 // Función para cargar favoritos del usuario
@@ -22,72 +29,111 @@ function cargarFavoritos() {
   if (!usuario) return;
   const favoritosGuardados = localStorage.getItem(`favoritos_${usuario.id}`);
   favoritos = favoritosGuardados ? JSON.parse(favoritosGuardados) : [];
+  console.log("❤️ Favoritos cargados:", favoritos.length);
 }
 
 // Función para verificar si un libro es favorito
 function esFavorito(libroId) {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if (!usuario) return false;
+  
+  const favoritos = JSON.parse(localStorage.getItem(`favoritos_${usuario.id}`) || '[]');
   return favoritos.some(fav => fav.libroId === libroId);
 }
 
-// Función para toggle favorito
-function toggleFavorito(libroId) {
+// 🔧 FUNCIÓN GLOBAL PARA TOGGLE FAVORITO (CORREGIDA)
+window.toggleFavorito = function(libroId) {
+  console.log("🔄 Toggle favorito llamado para libro ID:", libroId);
+  
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  
   if (!usuario || !usuario.id) {
-    Swal.fire("⚠️ Error", "Debes iniciar sesión para agregar favoritos", "warning");
-    return;
+      Swal.fire({
+          title: "⚠️ Necesitas iniciar sesión",
+          text: "Para agregar libros a favoritos, debes estar registrado",
+          icon: "warning",
+          confirmButtonText: "Ir al login",
+          showCancelButton: true,
+          cancelButtonText: "Cancelar"
+      }).then((result) => {
+          if (result.isConfirmed) {
+              window.location.href = "login.html";
+          }
+      });
+      return;
   }
 
+  const favoritosKey = `favoritos_${usuario.id}`;
+  let favoritos = JSON.parse(localStorage.getItem(favoritosKey) || '[]');
+  
   const yaEsFavorito = favoritos.some(fav => fav.libroId === libroId);
-  const btnFavorito = document.querySelector(`[data-favorito-id="${libroId}"]`);
+  const libro = librosData.find(l => l.id === libroId);
+
+  if (!libro) {
+      console.error("Libro no encontrado:", libroId);
+      return;
+  }
   
   if (yaEsFavorito) {
-    // Quitar de favoritos
-    favoritos = favoritos.filter(fav => fav.libroId !== libroId);
-    localStorage.setItem(`favoritos_${usuario.id}`, JSON.stringify(favoritos));
-    
-    if (btnFavorito) {
-      btnFavorito.innerHTML = '<i class="far fa-heart"></i>';
-      btnFavorito.classList.remove('favorito-activo');
-      btnFavorito.title = 'Agregar a favoritos';
-    }
-    
-    Swal.fire({
-      title: "💔 Quitado de favoritos",
-      text: "El libro fue removido de tus favoritos",
-      icon: "success",
-      timer: 1500,
-      showConfirmButton: false
-    });
-  } else {
-    // Agregar a favoritos
-    favoritos.push({
-      libroId: parseInt(libroId),
-      fechaAgregado: new Date().toISOString()
-    });
-    localStorage.setItem(`favoritos_${usuario.id}`, JSON.stringify(favoritos));
-    
-    if (btnFavorito) {
-      btnFavorito.innerHTML = '<i class="fas fa-heart"></i>';
-      btnFavorito.classList.add('favorito-activo');
-      btnFavorito.title = 'Quitar de favoritos';
-    }
-    
-    Swal.fire({
-      title: "❤️ Agregado a favoritos",
-      text: "El libro se agregó a tu lista de favoritos",
-      icon: "success",
-      timer: 1500,
-      showConfirmButton: false,
-      showCancelButton: true,
-      cancelButtonText: "Ver favoritos",
-      cancelButtonColor: "#ff6b9d"
-    }).then((result) => {
-      if (result.dismiss === Swal.DismissReason.cancel) {
-        window.location.href = "mis-favoritos.html";
-      }
-    });
-  }
-}
+      // Quitar de favoritos
+      favoritos = favoritos.filter(fav => fav.libroId !== libroId);
+      localStorage.setItem(favoritosKey, JSON.stringify(favoritos));
+      
+      Swal.fire({
+          title: "💔 Quitado de favoritos",
+          text: `"${libro.titulo}" fue removido de tus favoritos`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false
+      });
 
+      // Actualizar icono
+      const btn = document.querySelector(`.boton-favorito[data-libro-id="${libroId}"]`);
+      if (btn) {
+          btn.classList.remove('favorito-activo');
+          btn.querySelector('i').className = 'far fa-heart';
+      }
+  } else {
+      // Agregar a favoritos
+      favoritos.push({
+          libroId: libroId,
+          fechaAgregado: new Date().toISOString()
+      });
+      localStorage.setItem(favoritosKey, JSON.stringify(favoritos));
+      
+      Swal.fire({
+          title: "❤️ ¡Agregado a favoritos!",
+          text: `"${libro.titulo}" se agregó a tu lista`,
+          icon: "success",
+          showCancelButton: true,
+          confirmButtonText: "Seguir navegando",
+          cancelButtonText: "Ver favoritos",
+          timer: 3000,
+          timerProgressBar: true
+      }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.cancel) {
+              window.location.href = "mis-favoritos.html";
+          }
+      });
+
+      // Actualizar icono
+      const btn = document.querySelector(`.boton-favorito[data-libro-id="${libroId}"]`);
+      if (btn) {
+          btn.classList.add('favorito-activo');
+          btn.querySelector('i').className = 'fas fa-heart';
+      }
+  }
+};
+
+// 🔧 FUNCIÓN GLOBAL PARA VERIFICAR FAVORITOS
+window.esFavorito = function(libroId) {
+  return favoritos.some(fav => fav.libroId === libroId);
+};
+
+// 🔧 FUNCIÓN GLOBAL PARA OBTENER CONTADOR
+window.getContadorFavoritos = function() {
+  return favoritos.length;
+};
   
   // 🔄 Modal: abrir/cerrar - FORMULARIO COMPLETO ACTUALIZADO
   if (btnAgregar) {
@@ -393,124 +439,173 @@ console.log("📤 Datos que se envían:", datosLimpios); // Para debug
   
   async function cargarLibros() {
     if (!contenedorLibros) return;
-    try {
-      const response = await fetch("http://localhost:8080/api/libros");
-      const libros = await response.json();
-      contenedorLibros.innerHTML = "";
-
-      libros.forEach(libro => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-
-        // Determinar si está disponible
-        const disponible = libro.cantidad > 0;
-        const estadoTexto = disponible ? `Disponibles: ${libro.cantidad}` : "Agotado";
-        const estadoClase = disponible ? "disponible" : "agotado";
-
-    // Verificar si es favorito
-const yaEsFavorito = esFavorito(libro.id);
-
-card.innerHTML = `
-  <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
-  <div class="info">
-    <h3>${libro.titulo}</h3>
-    <p><strong>Autor:</strong> ${libro.autor}</p>
-    <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
-    <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
-    <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
-    <p>${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
     
-    <div class="acciones-libro">
-      <!-- Botón de favorito (siempre visible) -->
-      <button class="boton-favorito ${yaEsFavorito ? 'favorito-activo' : ''}" 
-              data-favorito-id="${libro.id}" 
-              onclick="toggleFavorito(${libro.id})"
-              title="${yaEsFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
-        <i class="${yaEsFavorito ? 'fas' : 'far'} fa-heart"></i>
-      </button>
-      
-      ${
-        rolUsuario === "ADMIN"
-          ? `<div class="acciones-admin">
-               <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
-               <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
-             </div>`
-          : ``
-      }
-      
-      <!-- Botón de reservar -->
-      ${disponible ? 
-        `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : 
-        `<button class="boton-reservar" disabled>📚 Agotado</button>`
-      }
-    </div>
-  </div>
-`;
-
-        // 👇 Evento de click en la tarjeta (modal de detalles)
-    card.addEventListener("click", (e) => {
-  // Lista de selectores a evitar
-  const selectoresEvitar = [
-    '.acciones-libro',
-    '.boton-editar', 
-    '.boton-eliminar', 
-    '.boton-reservar', 
-    '.boton-favorito',
-    '.acciones-admin',
-    'button' // Cualquier botón
-  ];
-  
-  // Verificar si el click fue en algún elemento a evitar
-  const clicEnAccion = selectoresEvitar.some(selector => 
-    e.target.closest(selector)
-  );
-  
-  if (clicEnAccion) {
-    return; // No abrir el modal de detalles
-  }
-          Swal.fire({
-            title: libro.titulo,
-            html: `
-              <div class="modal-libro">
-                <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" 
-                     alt="Portada de ${libro.titulo}" 
-                     class="modal-portada">
-                <div class="modal-info">
-                  <p><strong>Autor:</strong> ${libro.autor}</p>
-                  <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
-                  <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
-                  ${libro.signaturaTopografica ? `<p><strong>Signatura:</strong> ${libro.signaturaTopografica}</p>` : ''}
-                  ${libro.paginas ? `<p><strong>Páginas:</strong> ${libro.paginas}</p>` : ''}
-                  ${libro.ejemplar ? `<p><strong>Ejemplar:</strong> ${libro.ejemplar}</p>` : ''}
-                  ${libro.cantidadRegistro ? `<p><strong>Cantidad Registro:</strong> ${libro.cantidadRegistro}</p>` : ''}
-                  <p class="modal-sinopsis"><strong>Sinopsis:</strong> ${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
-                  ${libro.observaciones ? `<p class="modal-observaciones"><strong>Observaciones:</strong> ${libro.observaciones}</p>` : ''}
-                  ${libro.url ? `<p><strong>URL:</strong> <a href="${libro.url}" target="_blank">${libro.url}</a></p>` : ''}
-                </div>
-              </div>
-            `,
-            showCloseButton: true,
-            confirmButtonText: "Cerrar",
-            width: "600px",
-            background: "#1e1e1e",
-            color: "#f5f5f5",
-            customClass: {
-              popup: "swal-dark",
-              title: "swal-dark-title",
-              confirmButton: "swal-dark-btn"
+    try {
+        // Cambiamos el puerto a 8080 que es el que usa tu servidor Spring Boot
+        const response = await fetch("http://localhost:8080/api/libros", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-          });
         });
 
-        contenedorLibros.appendChild(card);
-      });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-      // ✅ Agregar eventos después de renderizar
-      agregarEventos();
-      mensajeSinResultados?.classList.remove("mostrar");
+        librosData = await response.json();
+        contenedorLibros.innerHTML = "";
+
+        librosData.forEach(libro => {
+          const card = document.createElement("div");
+          card.classList.add("card");
+
+          // Determinar si está disponible
+          const disponible = libro.cantidad > 0;
+          const estadoTexto = disponible ? `Disponibles: ${libro.cantidad}` : "Agotado";
+          const estadoClase = disponible ? "disponible" : "agotado";
+
+      // Verificar si es favorito
+      const yaEsFavorito = esFavorito(libro.id);
+
+      card.innerHTML = `
+        <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
+        <div class="info">
+          <h3>${libro.titulo}</h3>
+          <p><strong>Autor:</strong> ${libro.autor}</p>
+          <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
+          <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
+          <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
+          <p>${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
+          
+          <div class="acciones-libro">
+            <!-- Botón de favorito (siempre visible) -->
+            <button class="boton-favorito ${esFavorito(libro.id) ? 'favorito-activo' : ''}" 
+                    data-libro-id="${libro.id}" 
+                    onclick="event.stopPropagation(); toggleFavorito(${libro.id})">
+                <i class="${esFavorito(libro.id) ? 'fas' : 'far'} fa-heart"></i>
+            </button>
+            
+            ${
+              rolUsuario === "ADMIN"
+                ? `<div class="acciones-admin">
+                     <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
+                     <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+                   </div>`
+                : ``
+            }
+            
+            <!-- Botón de reservar -->
+            ${disponible ? 
+              `<button class="boton-reservar" data-id="${libro.id}">📚 Reservar</button>` : 
+              `<button class="boton-reservar" disabled>📚 Agotado</button>`
+            }
+          </div>
+        </div>
+      `;
+
+          // 👇 Evento de click en la tarjeta (modal de detalles)
+      card.addEventListener("click", (e) => {
+        // Lista de selectores a evitar
+        const selectoresEvitar = [
+          '.acciones-libro',
+          '.boton-editar', 
+          '.boton-eliminar', 
+          '.boton-reservar', 
+          '.boton-favorito',
+          '.acciones-admin',
+          'button' // Cualquier botón
+        ];
+        
+        // Verificar si el click fue en algún elemento a evitar
+        const clicEnAccion = selectoresEvitar.some(selector => 
+          e.target.closest(selector)
+        );
+        
+        if (clicEnAccion) {
+          return; // No abrir el modal de detalles
+        }
+            Swal.fire({
+              title: libro.titulo,
+              html: `
+                <div class="modal-libro">
+                  <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" 
+                       alt="Portada de ${libro.titulo}" 
+                       class="modal-portada">
+                  <div class="modal-info">
+                    <p><strong>Autor:</strong> ${libro.autor}</p>
+                    <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
+                    <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
+                    ${libro.signaturaTopografica ? `<p><strong>Signatura:</strong> ${libro.signaturaTopografica}</p>` : ''}
+                    ${libro.paginas ? `<p><strong>Páginas:</strong> ${libro.paginas}</p>` : ''}
+                    ${libro.ejemplar ? `<p><strong>Ejemplar:</strong> ${libro.ejemplar}</p>` : ''}
+                    ${libro.cantidadRegistro ? `<p><strong>Cantidad Registro:</strong> ${libro.cantidadRegistro}</p>` : ''}
+                    <p class="modal-sinopsis"><strong>Sinopsis:</strong> ${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
+                    ${libro.observaciones ? `<p class="modal-observaciones"><strong>Observaciones:</strong> ${libro.observaciones}</p>` : ''}
+                    ${libro.url ? `<p><strong>URL:</strong> <a href="${libro.url}" target="_blank">${libro.url}</a></p>` : ''}
+                  </div>
+                </div>
+              `,
+              showCloseButton: true,
+              confirmButtonText: "Cerrar",
+              width: "600px",
+              background: "#1e1e1e",
+              color: "#f5f5f5",
+              customClass: {
+                popup: "swal-dark",
+                title: "swal-dark-title",
+                confirmButton: "swal-dark-btn"
+              }
+            });
+          });
+
+          contenedorLibros.appendChild(card);
+        });
+
+        // ✅ Agregar eventos después de renderizar
+        agregarEventos();
+        mensajeSinResultados?.classList.remove("mostrar");
 
     } catch (error) {
-      console.error("❌ Error al cargar libros:", error);
+      console.error("Error al cargar libros:", error);
+      
+      // Mostrar mensaje de error al usuario
+      Swal.fire({
+          title: '❌ Error de conexión',
+          html: `
+              <div style="text-align: left;">
+                  <p>No se pudieron cargar los libros. Por favor verifica:</p>
+                  <ul>
+                      <li>Que el servidor esté ejecutándose en el puerto 8080</li>
+                      <li>Que la API esté respondiendo correctamente</li>
+                      <li>Que no haya problemas de red</li>
+                  </ul>
+                  <p>Error técnico: ${error.message}</p>
+              </div>
+          `,
+          icon: 'error',
+          confirmButtonText: 'Reintentar',
+          showCancelButton: true,
+          cancelButtonText: 'Cerrar'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              // Reintentar cargar los libros
+              cargarLibros();
+          }
+      });
+
+      // Si hay un contenedor de mensaje sin resultados, mostrarlo
+      if (mensajeSinResultados) {
+          mensajeSinResultados.innerHTML = `
+              <div class="error-message">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <p>No se pudieron cargar los libros</p>
+                  <small>Por favor, verifica la conexión con el servidor</small>
+              </div>
+          `;
+          mensajeSinResultados.classList.add("mostrar");
+      }
     }
   }
 
@@ -1102,3 +1197,89 @@ botonesEliminar.forEach(boton => {
   // ✅ Finalmente: carga inicial
   cargarLibros();
 });
+
+// Mover la función toggleFavorito fuera del DOMContentLoaded
+window.toggleFavorito = function(libroId) {
+    console.log("🔄 Toggle favorito llamado para libro ID:", libroId);
+    
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    
+    if (!usuario || !usuario.id) {
+        Swal.fire({
+            title: "⚠️ Necesitas iniciar sesión",
+            text: "Para agregar libros a favoritos, debes estar registrado",
+            icon: "warning",
+            confirmButtonText: "Ir al login",
+            showCancelButton: true,
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "login.html";
+            }
+        });
+        return;
+    }
+
+    const favoritosKey = `favoritos_${usuario.id}`;
+    let favoritos = JSON.parse(localStorage.getItem(favoritosKey) || '[]');
+    
+    const yaEsFavorito = favoritos.some(fav => fav.libroId === libroId);
+    const libro = librosData.find(l => l.id === libroId);
+
+    if (!libro) {
+        console.error("Libro no encontrado:", libroId);
+        return;
+    }
+    
+    if (yaEsFavorito) {
+        // Quitar de favoritos
+        favoritos = favoritos.filter(fav => fav.libroId !== libroId);
+        localStorage.setItem(favoritosKey, JSON.stringify(favoritos));
+        
+        Swal.fire({
+            title: "💔 Quitado de favoritos",
+            text: `"${libro.titulo}" fue removido de tus favoritos`,
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        // Actualizar icono
+        const btn = document.querySelector(`.boton-favorito[data-libro-id="${libroId}"]`);
+        if (btn) {
+            btn.classList.remove('favorito-activo');
+            btn.querySelector('i').className = 'far fa-heart';
+        }
+    } else {
+        // Agregar a favoritos
+        favoritos.push({
+            libroId: libroId,
+            fechaAgregado: new Date().toISOString()
+        });
+        localStorage.setItem(favoritosKey, JSON.stringify(favoritos));
+        
+        Swal.fire({
+            title: "❤️ ¡Agregado a favoritos!",
+            text: `"${libro.titulo}" se agregó a tu lista`,
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Seguir navegando",
+            cancelButtonText: "Ver favoritos",
+            timer: 3000,
+            timerProgressBar: true
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                window.location.href = "mis-favoritos.html";
+            }
+        });
+
+        // Actualizar icono
+        const btn = document.querySelector(`.boton-favorito[data-libro-id="${libroId}"]`);
+        if (btn) {
+            btn.classList.add('favorito-activo');
+            btn.querySelector('i').className = 'fas fa-heart';
+        }
+    }
+    
+    return !yaEsFavorito; // Retorna true si se agregó, false si se quitó
+};
