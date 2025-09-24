@@ -2,6 +2,168 @@
 let librosData = [];  // Agregar esta línea al inicio del archivo, fuera del DOMContentLoaded
 
 document.addEventListener("DOMContentLoaded", function () {
+    // ... tu código existente ...
+
+    // IMPORTANTE: Cargar librosData globalmente
+    window.librosData = [];
+
+    async function cargarLibros() {
+        if (!contenedorLibros) return;
+        
+        try {
+            const response = await fetch("http://localhost:8080/api/libros", {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // IMPORTANTE: Asignar a variable global
+            window.librosData = await response.json();
+            const librosData = window.librosData;
+            
+            contenedorLibros.innerHTML = "";
+
+            librosData.forEach(libro => {
+                const card = document.createElement("div");
+                card.classList.add("card");
+
+                const disponible = libro.cantidad > 0;
+                const estadoTexto = disponible ? `Disponibles: ${libro.cantidad}` : "Agotado";
+                const estadoClase = disponible ? "disponible" : "agotado";
+
+                // Usar el manager de favoritos
+                const yaEsFavorito = window.favoritosManager.esFavorito(libro.id);
+
+                card.innerHTML = `
+                    <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
+                    <div class="info">
+                        <h3>${libro.titulo}</h3>
+                        <p><strong>Autor:</strong> ${libro.autor}</p>
+                        <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
+                        <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
+                        <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
+                        <p>${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
+                        
+                        <div class="acciones-libro">
+                            <button class="boton-favorito ${yaEsFavorito ? 'favorito-activo' : ''}" 
+                                    data-libro-id="${libro.id}" 
+                                    onclick="event.stopPropagation(); window.favoritosManager.toggleFavorito(${libro.id}, ${JSON.stringify(libro).replace(/"/g, '&quot;')})">
+                                <i class="${yaEsFavorito ? 'fas' : 'far'} fa-heart"></i>
+                            </button>
+                            
+                            ${rolUsuario === "ADMIN" ? `
+                                <div class="acciones-admin">
+                                    <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
+                                    <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
+                                </div>
+                            ` : ''}
+                            
+                            <button class="boton-reservar" data-id="${libro.id}" ${!disponible ? 'disabled' : ''}>
+                                📚 ${disponible ? 'Reservar' : 'Agotado'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Evento click en la tarjeta para modal de detalles
+                card.addEventListener("click", (e) => {
+                    const selectoresEvitar = [
+                        '.acciones-libro',
+                        '.boton-editar', 
+                        '.boton-eliminar', 
+                        '.boton-reservar', 
+                        '.boton-favorito',
+                        '.acciones-admin',
+                        'button'
+                    ];
+                    
+                    const clicEnAccion = selectoresEvitar.some(selector => 
+                        e.target.closest(selector)
+                    );
+                    
+                    if (clicEnAccion) return;
+
+                    Swal.fire({
+                        title: libro.titulo,
+                        html: `
+                            <div class="modal-libro">
+                                <img src="${libro.imagen || libro.imagenUrl || 'ruta/por_defecto.jpg'}" 
+                                     alt="Portada de ${libro.titulo}" 
+                                     class="modal-portada">
+                                <div class="modal-info">
+                                    <p><strong>Autor:</strong> ${libro.autor}</p>
+                                    <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
+                                    <p><strong>Registro:</strong> ${libro.registro || libro.isbn || 'N/A'}</p>
+                                    ${libro.signaturaTopografica ? `<p><strong>Signatura:</strong> ${libro.signaturaTopografica}</p>` : ''}
+                                    ${libro.paginas ? `<p><strong>Páginas:</strong> ${libro.paginas}</p>` : ''}
+                                    ${libro.ejemplar ? `<p><strong>Ejemplar:</strong> ${libro.ejemplar}</p>` : ''}
+                                    ${libro.cantidadRegistro ? `<p><strong>Cantidad Registro:</strong> ${libro.cantidadRegistro}</p>` : ''}
+                                    <p class="modal-sinopsis"><strong>Sinopsis:</strong> ${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
+                                    ${libro.observaciones ? `<p class="modal-observaciones"><strong>Observaciones:</strong> ${libro.observaciones}</p>` : ''}
+                                    ${libro.url ? `<p><strong>URL:</strong> <a href="${libro.url}" target="_blank">${libro.url}</a></p>` : ''}
+                                </div>
+                            </div>
+                        `,
+                        showCloseButton: true,
+                        confirmButtonText: "Cerrar",
+                        width: "600px",
+                        background: "#1e1e1e",
+                        color: "#f5f5f5",
+                        customClass: {
+                            popup: "swal-dark",
+                            title: "swal-dark-title",
+                            confirmButton: "swal-dark-btn"
+                        }
+                    });
+                });
+
+                contenedorLibros.appendChild(card);
+            });
+
+            // Agregar eventos después de renderizar
+            agregarEventos();
+            mensajeSinResultados?.classList.remove("mostrar");
+
+        } catch (error) {
+            console.error("Error al cargar libros:", error);
+            // Tu manejo de errores existente...
+        }
+    }
+
+    // Escuchar cambios en favoritos
+    window.addEventListener('favoritosChanged', function(e) {
+        console.log("🔄 Favoritos cambiaron:", e.detail);
+        // Actualizar botones de favorito si es necesario
+        actualizarBotonesFavoritos();
+    });
+
+    function actualizarBotonesFavoritos() {
+        const botonesFavorito = document.querySelectorAll('.boton-favorito');
+        botonesFavorito.forEach(btn => {
+            const libroId = btn.dataset.libroId;
+            const esFav = window.favoritosManager.esFavorito(libroId);
+            
+            if (esFav) {
+                btn.classList.add('favorito-activo');
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'fas fa-heart';
+            } else {
+                btn.classList.remove('favorito-activo');
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'far fa-heart';
+            }
+        });
+    }
+
+    // ... resto del código existente ...
+
+
 
   // Recuperar usuario logueado desde localStorage
   const contenedorLibros = document.querySelector(".libros");

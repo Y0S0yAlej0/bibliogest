@@ -12,15 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnExportarFavoritos = document.getElementById("btn-exportar-favoritos");
     const btnCompartirFavoritos = document.getElementById("btn-compartir-favoritos");
 
-    // === DATOS === //
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    // === INICIALIZACIÓN === //
+   const usuario = JSON.parse(localStorage.getItem("usuario"));
     let favoritos = [];
     let librosData = [];
     let filtroActual = "todos";
 
-    // === INICIALIZACIÓN === //
-    init();
-
+    // === INICIALIZACIÓN CORREGIDA === //
     async function init() {
         if (!usuario) {
             Swal.fire({
@@ -34,24 +32,42 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        console.log("🚀 Iniciando mis-favoritos para usuario:", usuario.id);
+        
         await cargarLibros();
         cargarFavoritos();
         configurarEventos();
+        
+        // Escuchar cambios en favoritos desde otras páginas
+        window.addEventListener('favoritosChanged', function(e) {
+            console.log("🔄 Favoritos cambiaron desde otra página");
+            cargarFavoritos();
+            renderizarFavoritos();
+        });
     }
 
-    // === CARGAR DATOS === //
+    function cargarFavoritos() {
+        const favoritosGuardados = localStorage.getItem(`favoritos_${usuario.id}`);
+        favoritos = favoritosGuardados ? JSON.parse(favoritosGuardados) : [];
+        
+        console.log("❤️ Favoritos cargados en mis-favoritos:", {
+            total: favoritos.length,
+            datos: favoritos
+        });
+        
+        actualizarContadores();
+        renderizarFavoritos(); // Importante: renderizar inmediatamente después de cargar
+    }
+
     async function cargarLibros() {
         try {
+            console.log("📚 Cargando libros desde API...");
             const response = await fetch("http://localhost:8080/api/libros");
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             librosData = await response.json();
-            console.log("📚 Libros cargados:", librosData.length);
-            
-            // Importante: Llamar a renderizarFavoritos después de cargar los libros
-            cargarFavoritos();
-            renderizarFavoritos();
+            console.log("✅ Libros cargados:", librosData.length);
         } catch (error) {
             console.error("❌ Error al cargar libros:", error);
             Swal.fire({
@@ -62,14 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function cargarFavoritos() {
-        const favoritosGuardados = localStorage.getItem(`favoritos_${usuario.id}`);
-        favoritos = favoritosGuardados ? JSON.parse(favoritosGuardados) : [];
-        console.log("❤️ Favoritos cargados:", favoritos);
-        console.log("🔍 Favoritos datos:", favoritos);  // Para debug
-        
-        actualizarContadores();
-    }
 
     function guardarFavoritos() {
         localStorage.setItem(`favoritos_${usuario.id}`, JSON.stringify(favoritos));
