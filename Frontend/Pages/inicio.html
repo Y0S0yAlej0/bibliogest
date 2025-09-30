@@ -5,23 +5,22 @@
   <title>Bibliogent - Inicio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../css/sytles.css">
-    <link rel="icon" href="../Assets/Icons/favicon.svg" />
-
+  <link rel="icon" href="../Assets/Icons/favicon.svg" />
 </head>
 <body>
 
   <main class="main-container">
     <p class="title">Bienvenido a Bibliogest</p>
-   <h1>Tu gestor de bibliotecas mas confiable</h1>
-   <p class="text">Un espacio dedicado al conocimiento, la cultura y la educación. Aquí encontrarás acceso a miles de libros, recursos digitales y servicios pensados para apoyar tu aprendizaje e investigación. Explora nuestro catálogo en línea, descubre todo lo que la biblioteca tiene para ofrecerte. ¡Tu puerta al mundo del saber! .</p>
-    <div class="fondo">
-    </div>
-
+    <h1>Tu gestor de bibliotecas más confiable</h1>
+    <p class="text">Un espacio dedicado al conocimiento, la cultura y la educación. Aquí encontrarás acceso a miles de libros, recursos digitales y servicios pensados para apoyar tu aprendizaje e investigación. Explora nuestro catálogo en línea, descubre todo lo que la biblioteca tiene para ofrecerte. ¡Tu puerta al mundo del saber!</p>
+    
+    <div class="fondo"></div>
 
     <section class="section">
       <h2>¿Qué es Bibliogest?</h2>
       <p>Bibliogest es una plataforma diseñada para facilitar la gestión de bibliotecas y el acceso a recursos digitales.</p>
       <p>Ofrecemos un catálogo en línea, herramientas de búsqueda avanzada y servicios personalizados para mejorar tu experiencia de usuario.</p>
+    </section>
   
     <section class="section">
       <h2>Explora nuestros recursos digitales</h2>
@@ -29,9 +28,7 @@
 
       <div class="card-container">
         <div class="card">
-          
           <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" alt="Recursos">
-          
           <h3>Recursos destacados</h3>
           <p>Accede a una selección de libros, artículos y documentos recomendados por nuestro equipo.</p>
         </div>
@@ -49,63 +46,35 @@
         </div>
       </div>
     </section>
-        <section class="icon-grid">
-      <a href="index.html" class="icon-button">
-        <div class="circle-icon" style="background-color: #a2a5e64e">
-          <img src="../Assets/image/logo.png" alt="Inicio">
-        </div>
-        <p>Inicio</p>
-      </a>
 
-      <a href="register.html" class="icon-button">
-        <div class="circle-icon" style="background-color: #59A5A5;">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828911.png" alt="Registrar">
-        </div>
-        <p>Registrar</p>
-      </a>
-
-      <a href="login.html" class="icon-button">
-        <div class="circle-icon" style="background-color: #E4B343;">
-          <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Inicia sesión">
-        </div>
-        <p>Inicia sesión</p>
-      </a>
-
-      <a href="reseña.html" class="icon-button">
-        <div class="circle-icon" style="background-color: #2B7A78;">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Reseñas">
-        </div>
-        <p>Reseñas</p>
-      </a>
-
-      <a href="directorio.html" class="icon-button">
-        <div class="circle-icon" style="background-color: #59A5A5;">
-          <img src="https://cdn-icons-png.flaticon.com/512/3063/3063828.png" alt="Directorio">
-        </div>
-        <p>Directorio</p>
-      </a>
-
-      <a href="news.html" class="icon-button">
-        <div class="circle-icon" style="background-color: #E4B343;">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="News">
-        </div>
-        <p>News</p>
-      </a>
+   
+    <!-- Sección de Libros Aleatorios -->
+    <section class="libros-aleatorios-section">
+      <h2>📚 Descubre nuestra colección</h2>
+      <div id="libros-container" class="libros-container">
+        <!-- Los libros se cargarán dinámicamente aquí -->
+      </div>
     </section>
-
 
   </main>
 
-                                         <!--Integraciones con js-->
-
- <!--Integracion de slidebar-->
-<script src="../js/slidebar.js"></script>
-<!-- Integracion de footer -->
-<div id="footer-container"></div>
-<script src="../js/include-footer.js"></script> <!-- también sube un nivel -->
-<script src="../js/include-header.js"></script> <!-- también sube un nivel -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="../Js/slidebar.js"></script>
+  <!-- Integraciones con js -->
+  
+  <!-- Integracion de slidebar -->
+  <script src="../js/slidebar.js"></script>
+  
+  <!-- Integracion de footer (oculto por CSS) -->
+  <div id="footer-container"></div>
+  <script src="../js/include-footer.js"></script>
+  
+  <!-- Integracion de header -->
+  <script src="../js/include-header.js"></script>
+  
+  <!-- SweetAlert2 para modales -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- Script de libros aleatorios -->
+  <script src="../Js/libros-aleatorios.js"></script>
 
 </body>
 </html>

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/libros")
@@ -280,4 +281,68 @@ public class LibroController {
             ));
         }
     }
+
+    @GetMapping("/aleatorios")
+    public ResponseEntity<?> obtenerLibrosAleatorios(@RequestParam(defaultValue = "8") int cantidad) {
+        try {
+            System.out.println("🔄 Solicitando " + cantidad + " libros aleatorios...");
+
+            // Obtener todos los libros
+            List<Libro> todosLosLibros = servicio.obtenerTodos();
+
+            System.out.println("📚 Total de libros en BD: " + todosLosLibros.size());
+
+            if (todosLosLibros.isEmpty()) {
+                System.out.println("⚠️ No hay libros en la base de datos");
+                return ResponseEntity.ok(List.of()); // Retornar lista vacía si no hay libros
+            }
+
+            // Mezclar la lista aleatoriamente
+            List<Libro> librosAleatorios = new java.util.ArrayList<>(todosLosLibros);
+            java.util.Collections.shuffle(librosAleatorios);
+
+            // Tomar solo la cantidad solicitada
+            int cantidadFinal = Math.min(cantidad, librosAleatorios.size());
+            List<Libro> resultado = librosAleatorios.subList(0, cantidadFinal);
+
+            System.out.println("✅ Devolviendo " + resultado.size() + " libros aleatorios");
+
+            // Mapear a un formato más ligero
+            List<Map<String, Object>> librosSimplificados = resultado.stream()
+                    .map(libro -> {
+                        Map<String, Object> libroMap = new HashMap<>();
+                        libroMap.put("id", libro.getId());
+                        libroMap.put("titulo", libro.getTitulo());
+                        libroMap.put("autor", libro.getAutor());
+                        libroMap.put("imagen", libro.getImagen());
+                        libroMap.put("estado", libro.getEstado());
+                        libroMap.put("cantidad", libro.getCantidad());
+                        libroMap.put("genero", libro.getGenero());
+                        libroMap.put("sinopsis", libro.getSinopsis());
+
+                        // Determinar disponibilidad
+                        boolean disponible = "Disponible".equalsIgnoreCase(libro.getEstado())
+                                && libro.getCantidad() != null
+                                && libro.getCantidad() > 0;
+                        libroMap.put("disponible", disponible);
+
+                        System.out.println("   📖 " + libro.getTitulo() + " - " + (disponible ? "✓" : "✗"));
+
+                        return libroMap;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(librosSimplificados);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener libros aleatorios: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Error al obtener libros aleatorios",
+                            "detalle", e.getMessage()
+                    ));
+        }
+    }
+
 }
