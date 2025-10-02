@@ -39,7 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ calificacion, contenido })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => {
           Swal.fire({
             icon: "success",
@@ -50,6 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
             confirmButtonColor: "#00b894"
           });
           form.reset();
+          // Resetear las estrellas visualmente
+          document.querySelectorAll('.rating-stars label').forEach(label => {
+            label.style.color = 'rgba(202, 165, 79, 0.3)';
+            label.style.transform = 'scale(1)';
+          });
           cargarResenas(); // recargar reseñas
         })
         .catch(err => {
@@ -57,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "No se pudo enviar la reseña.",
+            text: "No se pudo enviar la reseña. Por favor, intenta de nuevo.",
             background: "#1e1e1e",
             color: "#fff"
           });
@@ -74,27 +84,18 @@ function cargarResenas() {
   fetch("http://localhost:8080/api/resenas")
     .then(res => res.json())
     .then(resenas => {
-      const container = document.getElementById("resenasContainer");
-      if (!container) return;
+      // Convertir resenas al formato esperado por renderReviews
+      const resenasFormateadas = resenas.map(resena => ({
+        rating: resena.calificacion,
+        texto: resena.contenido,
+        fecha: resena.fecha,
+        usuario: resena.usuario.nombre
+      }));
 
-      container.innerHTML = ""; // limpia reseñas anteriores
-
-      resenas.reverse().forEach(resena => {
-        const card = document.createElement("section");
-        card.className = "review-card";
-        card.innerHTML = `
-          <div class="card">
-            <div class="card-header">
-              ${resena.usuario.nombre} (${resena.usuario.correo}) - <small>${resena.calificacion}/5</small>
-            </div>
-            <div class="card-body">
-              <p>${resena.contenido}</p>
-              <footer>${resena.fecha}</footer>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+      renderReviews(resenasFormateadas);
     })
-    .catch(err => console.error("Error al cargar reseñas:", err));
+    .catch(err => {
+      console.error("Error al cargar reseñas:", err);
+      document.getElementById('noReviews').style.display = 'block';
+    });
 }

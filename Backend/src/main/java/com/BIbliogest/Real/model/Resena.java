@@ -1,5 +1,6 @@
 package com.BIbliogest.Real.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -16,21 +17,48 @@ public class Resena {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties({"resenas", "password", "prestamos"}) // Evita recursión infinita
     private Usuario usuario;
 
     // Getters y Setters
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public int getCalificacion() { return calificacion; }
-    public void setCalificacion(int calificacion) { this.calificacion = calificacion; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getContenido() { return contenido; }
-    public void setContenido(String contenido) { this.contenido = contenido; }
+    public int getCalificacion() {
+        return calificacion;
+    }
 
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    public void setCalificacion(int calificacion) {
+        this.calificacion = calificacion;
+    }
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }

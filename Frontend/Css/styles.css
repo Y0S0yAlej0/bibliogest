@@ -133,9 +133,9 @@ h1 {
 
 h2 {
   color: var(--color-secondary);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(2rem, 3vw, 2rem);
   margin-bottom: 15px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -763,32 +763,6 @@ input::placeholder {
   border: 1px solid rgba(202, 165, 79, 0.3);
 }
 
-/* Skeleton loading para libros */
-.libro-card.skeleton {
-  pointer-events: none;
-}
-
-.libro-card.skeleton .libro-portada,
-.libro-card.skeleton .libro-titulo,
-.libro-card.skeleton .libro-autor,
-.libro-card.skeleton .libro-disponible {
-  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  color: transparent;
-  border-radius: 8px;
-}
-
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Ocultar el footer completamente */
-#footer-container,
-footer {
-  display: none !important;
-}
 
 /* ========================================
    RESPONSIVE

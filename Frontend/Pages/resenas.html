@@ -4,52 +4,144 @@
   <meta charset="UTF-8">
   <title>Bibliogest - Reseñas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <link rel="stylesheet" href="../css/reseñas.css">
   <link rel="icon" href="../Assets/Icons/favicon.svg" />
+  <link rel="stylesheet" href="../css/reseñas.css">
 </head>
 <body>
 
   <main class="container">
-    <h1>Reseñas de Libros</h1>
-    <p class="lead">Explora lo que otros usuarios opinan sobre nuestros servicios.</p>
+    <div class="header">
+      <h1>Reseñas de Libros</h1>
+      <p class="lead">Comparte tu experiencia y descubre lo que otros lectores opinan</p>
+    </div>
 
-    <!-- Formulario para agregar una nueva reseña -->
-    <section class="card">
-      <h2 class="card-header">Agregar Reseña</h2>
-      <div class="card-body">
-        <form id="resenaForm">
-          <label for="inputRating">Calificación (1-5)</label>
-          <select id="inputRating" required>
-            <option selected disabled>Seleccione...</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-
-          <label for="inputReview">Reseña</label>
-          <textarea id="inputReview" rows="3" placeholder="Escribe tu reseña" required></textarea>
-
-          <button type="submit">Enviar Reseña</button>
-        </form>
+    <!-- Estadísticas -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-number" id="totalReviews">0</div>
+        <div class="stat-label">Reseñas Totales</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-number" id="avgRating">0.0</div>
+        <div class="stat-label">Calificación Promedio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="topRated">0</div>
+        <div class="stat-label">5 Estrellas</div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <section class="form-card">
+      <h2>Agregar tu Reseña</h2>
+      <form id="resenaForm">
+        <div class="form-group">
+          <label>Calificación</label>
+          <div class="rating-stars" id="ratingStars">
+            <input type="radio" name="rating" id="star5" value="5">
+            <label for="star5">★</label>
+            <input type="radio" name="rating" id="star4" value="4">
+            <label for="star4">★</label>
+            <input type="radio" name="rating" id="star3" value="3">
+            <label for="star3">★</label>
+            <input type="radio" name="rating" id="star2" value="2">
+            <label for="star2">★</label>
+            <input type="radio" name="rating" id="star1" value="1">
+            <label for="star1">★</label>
+          </div>
+          <input type="hidden" id="inputRating" name="inputRating" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputReview">Tu Reseña</label>
+          <textarea id="inputReview" placeholder="Comparte tu opinión sobre el libro o el servicio..." required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Publicar Reseña</button>
+      </form>
     </section>
 
-    <!-- Contenedor dinámico para reseñas -->
-    <div id="resenasContainer"></div>
+    <!-- Reseñas -->
+    <div id="resenasContainer" class="reviews-grid">
+      <!-- Las reseñas se cargarán dinámicamente -->
+    </div>
+
+    <div id="noReviews" class="no-reviews" style="display: none;">
+      <p>Aún no hay reseñas. ¡Sé el primero en compartir tu opinión!</p>
+    </div>
   </main>
 
-  <!-- Slidebar -->
+  <!-- Scripts -->
   <script src="../js/slidebar.js"></script>
-
-  <!-- Footer -->
   <div id="footer-container"></div>
   <script src="../js/include-footer.js"></script>
-
-  <!-- Reseñas -->
-  <script src="../js/reseñas.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Sistema de estrellas
+    const ratingStars = document.querySelectorAll('.rating-stars input[type="radio"]');
+    const hiddenRating = document.getElementById('inputRating');
+
+    ratingStars.forEach(star => {
+      star.addEventListener('change', function() {
+        hiddenRating.value = this.value;
+        updateStarDisplay(parseInt(this.value));
+      });
+    });
+
+    function updateStarDisplay(rating) {
+      const labels = document.querySelectorAll('.rating-stars label');
+      labels.forEach((label, index) => {
+        if (index < rating) {
+          label.style.color = 'var(--color-accent)';
+          label.style.transform = 'scale(1.2)';
+        } else {
+          label.style.color = 'rgba(202, 165, 79, 0.3)';
+          label.style.transform = 'scale(1)';
+        }
+      });
+    }
+
+    // Actualizar estadísticas
+    function updateStats(reviews) {
+      const total = reviews.length;
+      const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / total || 0;
+      const fiveStars = reviews.filter(r => r.rating === 5).length;
+
+      document.getElementById('totalReviews').textContent = total;
+      document.getElementById('avgRating').textContent = avg.toFixed(1);
+      document.getElementById('topRated').textContent = fiveStars;
+    }
+
+    // Renderizar reseñas
+    function renderReviews(reviews) {
+      const container = document.getElementById('resenasContainer');
+      const noReviews = document.getElementById('noReviews');
+
+      if (reviews.length === 0) {
+        container.style.display = 'none';
+        noReviews.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'grid';
+      noReviews.style.display = 'none';
+
+      container.innerHTML = reviews.map(review => `
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-user">${review.usuario || 'Anónimo'}</div>
+            <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+          </div>
+          <p class="review-text">${review.texto}</p>
+          <div class="review-date">${new Date(review.fecha).toLocaleDateString('es-ES')}</div>
+        </div>
+      `).join('');
+
+      updateStats(reviews);
+    }
+  </script>
+  
+  <script src="../js/reseñas.js"></script>
 </body>
 </html>

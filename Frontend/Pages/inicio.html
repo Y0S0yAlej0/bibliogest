@@ -2,26 +2,39 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Bibliogent - Inicio</title>
+  <title>Bibliogest - Inicio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../css/sytles.css">
+  <link rel="stylesheet" href="../css/styles.css">
   <link rel="icon" href="../Assets/Icons/favicon.svg" />
 </head>
 <body>
 
   <main class="main-container">
-    <p class="title">Bienvenido a Bibliogest</p>
-    <h1>Tu gestor de bibliotecas más confiable</h1>
-    <p class="text">Un espacio dedicado al conocimiento, la cultura y la educación. Aquí encontrarás acceso a miles de libros, recursos digitales y servicios pensados para apoyar tu aprendizaje e investigación. Explora nuestro catálogo en línea, descubre todo lo que la biblioteca tiene para ofrecerte. ¡Tu puerta al mundo del saber!</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <p class="title">Bienvenido a Bibliogest</p>
+      <h1>Tu gestor de bibliotecas más confiable</h1>
+      <p class="text">Un espacio dedicado al conocimiento, la cultura y la educación. Aquí encontrarás acceso a miles de libros, recursos digitales y servicios pensados para apoyar tu aprendizaje e investigación. Explora nuestro catálogo en línea y descubre todo lo que la biblioteca tiene para ofrecerte. ¡Tu puerta al mundo del saber!</p>
+    </div>
     
     <div class="fondo"></div>
 
+    <!-- Sección: ¿Qué es Bibliogest? -->
     <section class="section">
       <h2>¿Qué es Bibliogest?</h2>
       <p>Bibliogest es una plataforma diseñada para facilitar la gestión de bibliotecas y el acceso a recursos digitales.</p>
       <p>Ofrecemos un catálogo en línea, herramientas de búsqueda avanzada y servicios personalizados para mejorar tu experiencia de usuario.</p>
     </section>
   
+  <!-- Sección de Libros Aleatorios -->
+    <section class="libros-aleatorios-section">
+      <h2>📚 Descubre nuestra colección</h2>
+      <div id="libros-container" class="libros-container">
+        <!-- Los libros se cargarán dinámicamente aquí -->
+      </div>
+    </section>
+
+    <!-- Sección de Recursos Digitales -->
     <section class="section">
       <h2>Explora nuestros recursos digitales</h2>
       <p class="text-muted">Accede a contenidos seleccionados y herramientas útiles desde cualquier lugar</p>
@@ -47,34 +60,58 @@
       </div>
     </section>
 
-   
-    <!-- Sección de Libros Aleatorios -->
-    <section class="libros-aleatorios-section">
-      <h2>📚 Descubre nuestra colección</h2>
-      <div id="libros-container" class="libros-container">
-        <!-- Los libros se cargarán dinámicamente aquí -->
-      </div>
+    <!-- Sección: Misión y Visión -->
+    <section class="section">
+      <h2>Nuestra misión</h2>
+      <p>Promover el acceso libre y equitativo al conocimiento, impulsando el aprendizaje continuo y la investigación en nuestra comunidad.</p>
+
+      <h2>Nuestra visión</h2>
+      <p>Convertirnos en la plataforma líder en gestión bibliotecaria y recursos digitales, fomentando una sociedad más informada y crítica.</p>
+    </section>
+
+    <!-- Sección: Servicios -->
+    <section class="section">
+      <h2>Servicios que ofrecemos</h2>
+      <ul style="text-align: left; max-width: 600px; margin: 0 auto; color: var(--color-text-secondary); line-height: 2;">
+        <li>📖 Préstamo y reserva de libros físicos y digitales.</li>
+        <li>🔍 Búsqueda avanzada en nuestro catálogo en línea.</li>
+        <li>👨‍🏫 Asesoría personalizada en consultas e investigaciones.</li>
+        <li>💻 Acceso a bases de datos y recursos electrónicos exclusivos.</li>
+        <li>📅 Eventos culturales, talleres y clubes de lectura.</li>
+      </ul>
+    </section>
+
+    <!-- Sección: Beneficios -->
+    <section class="section">
+      <h2>¿Por qué usar Bibliogest?</h2>
+      <p>Al registrarte en nuestra plataforma tendrás acceso a herramientas personalizadas, historial de lecturas, recomendaciones exclusivas y la posibilidad de gestionar tus préstamos en línea.</p>
+    </section>
+
+    <!-- Sección: Contacto -->
+    <section class="section">
+      <h2>¿Necesitas ayuda?</h2>
+      <p>Puedes escribirnos a <a href="mailto:bibliogest.notification@gmail.com" style="color: var(--color-accent); text-decoration: none; border-bottom: 2px solid var(--color-accent);">bibliogest.notification@gmail.com</a> o consultar con nuestro personal  <a href="https://www.instagram.com/sv___127/" style="color: var(--color-accent); text-decoration: none; border-bottom: 2px solid var(--color-accent);">Redes</a>. Nuestro equipo estará encantado de apoyarte en tu experiencia de lectura.</p>
     </section>
 
   </main>
 
   <!-- Integraciones con js -->
   
-  <!-- Integracion de slidebar -->
+  <!-- Integración de slidebar -->
   <script src="../js/slidebar.js"></script>
   
-  <!-- Integracion de footer (oculto por CSS) -->
+  <!-- Integración de footer (oculto por CSS) -->
   <div id="footer-container"></div>
   <script src="../js/include-footer.js"></script>
   
-  <!-- Integracion de header -->
+  <!-- Integración de header -->
   <script src="../js/include-header.js"></script>
   
   <!-- SweetAlert2 para modales -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <!-- Script de libros aleatorios -->
-  <script src="../Js/libros-aleatorios.js"></script>
+  <script src="../js/libros-aleatorios.js"></script>
 
 </body>
 </html>
