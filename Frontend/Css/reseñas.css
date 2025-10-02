@@ -258,29 +258,25 @@ textarea {
 /* Sistema de estrellas */
 .rating-stars {
   display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  gap: 10px;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 8px;
   margin-bottom: 20px;
 }
 
 .rating-stars input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .rating-stars label {
   font-size: 2rem;
   color: rgba(202, 165, 79, 0.3);
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: all 0.2s ease;
 }
 
-.rating-stars label:hover,
-.rating-stars label:hover ~ label {
-  color: var(--color-accent);
-  transform: scale(1.2);
+.rating-stars label:hover {
+  transform: scale(1.15);
 }
 
 /* Reseñas */
@@ -372,5 +368,9 @@ textarea {
 
   .form-card {
     padding: 25px;
+  }
+
+  .rating-stars label {
+    font-size: 1.8rem;
   }
 }

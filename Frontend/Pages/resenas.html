@@ -38,16 +38,16 @@
         <div class="form-group">
           <label>Calificación</label>
           <div class="rating-stars" id="ratingStars">
-            <input type="radio" name="rating" id="star5" value="5">
-            <label for="star5">★</label>
-            <input type="radio" name="rating" id="star4" value="4">
-            <label for="star4">★</label>
-            <input type="radio" name="rating" id="star3" value="3">
-            <label for="star3">★</label>
-            <input type="radio" name="rating" id="star2" value="2">
-            <label for="star2">★</label>
             <input type="radio" name="rating" id="star1" value="1">
-            <label for="star1">★</label>
+            <label for="star1" data-rating="1">★</label>
+            <input type="radio" name="rating" id="star2" value="2">
+            <label for="star2" data-rating="2">★</label>
+            <input type="radio" name="rating" id="star3" value="3">
+            <label for="star3" data-rating="3">★</label>
+            <input type="radio" name="rating" id="star4" value="4">
+            <label for="star4" data-rating="4">★</label>
+            <input type="radio" name="rating" id="star5" value="5">
+            <label for="star5" data-rating="5">★</label>
           </div>
           <input type="hidden" id="inputRating" name="inputRating" required>
         </div>
@@ -80,21 +80,37 @@
   <script>
     // Sistema de estrellas
     const ratingStars = document.querySelectorAll('.rating-stars input[type="radio"]');
+    const starLabels = document.querySelectorAll('.rating-stars label');
     const hiddenRating = document.getElementById('inputRating');
 
-    ratingStars.forEach(star => {
-      star.addEventListener('change', function() {
-        hiddenRating.value = this.value;
-        updateStarDisplay(parseInt(this.value));
+    // Hover effect
+    starLabels.forEach((label) => {
+      label.addEventListener('mouseenter', function() {
+        const rating = parseInt(this.getAttribute('data-rating'));
+        updateStarDisplay(rating, false);
       });
     });
 
-    function updateStarDisplay(rating) {
-      const labels = document.querySelectorAll('.rating-stars label');
-      labels.forEach((label, index) => {
-        if (index < rating) {
+    // Restaurar al rating seleccionado cuando sale el mouse
+    document.querySelector('.rating-stars').addEventListener('mouseleave', function() {
+      const currentRating = parseInt(hiddenRating.value) || 0;
+      updateStarDisplay(currentRating, true);
+    });
+
+    // Al hacer click
+    ratingStars.forEach(star => {
+      star.addEventListener('change', function() {
+        hiddenRating.value = this.value;
+        updateStarDisplay(parseInt(this.value), true);
+      });
+    });
+
+    function updateStarDisplay(rating, isSelected) {
+      starLabels.forEach((label) => {
+        const starValue = parseInt(label.getAttribute('data-rating'));
+        if (starValue <= rating) {
           label.style.color = 'var(--color-accent)';
-          label.style.transform = 'scale(1.2)';
+          label.style.transform = isSelected ? 'scale(1.2)' : 'scale(1.1)';
         } else {
           label.style.color = 'rgba(202, 165, 79, 0.3)';
           label.style.transform = 'scale(1)';
