@@ -1,6 +1,7 @@
 package com.BIbliogest.Real.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Setter;
 import java.util.List;
@@ -19,7 +20,7 @@ public class Usuario {
     private String correo;
 
     @Setter
-    @JsonIgnore  // No exponer contraseña en JSON
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // ✅ Solo para escribir, no para leer
     private String contrasena;
 
     @Setter
@@ -28,12 +29,11 @@ public class Usuario {
     @Setter
     private String rol;
 
-    // Relación con reseñas (si la tienes)
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonIgnore  // Evita recursión infinita
+    @JsonIgnore
     private List<Resena> resenas;
 
-    // Getters y Setters
+    // Getters
     public Long getId() {
         return id;
     }

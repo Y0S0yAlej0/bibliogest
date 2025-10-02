@@ -5,9 +5,15 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
+      const correo = document.getElementById("correo").value.trim().toLowerCase();
+      const contrasena = document.getElementById("contrasena").value.trim();
+
+      console.log("📧 Correo:", correo);
+      console.log("🔑 Contraseña:", contrasena);
+
       const data = {
-        correo: document.getElementById("correo").value,
-        contrasena: document.getElementById("contrasena").value
+        correo: correo,
+        contrasena: contrasena
       };
 
       fetch("http://localhost:8080/api/usuarios/login", {
@@ -16,18 +22,20 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify(data)
       })
         .then(res => {
+          console.log("📡 Status:", res.status);
           if (!res.ok) {
-            if (res.status === 401) throw new Error("❌ Contraseña incorrecta");
-            if (res.status === 404) throw new Error("❌ Correo no registrado");
-            throw new Error("❌ Error desconocido");
+            return res.text().then(msg => {
+              if (res.status === 401) throw new Error("❌ Contraseña incorrecta");
+              if (res.status === 404) throw new Error("❌ Correo no registrado");
+              throw new Error(msg || "❌ Error desconocido");
+            });
           }
           return res.json();
         })
         .then(usuario => {
-          // 🔒 Guardar el usuario en localStorage
+          console.log("✅ Usuario logueado:", usuario);
           localStorage.setItem("usuario", JSON.stringify(usuario));
 
-          // ✅ Mostrar bienvenida
           Swal.fire({
             title: `¡Bienvenido/a, ${usuario.nombre}!`,
             icon: "success",
@@ -40,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         })
         .catch(error => {
-          // ❌ Mostrar error con fondo oscuro
+          console.error("❌ Error:", error);
           Swal.fire({
             title: "Error",
             text: error.message,

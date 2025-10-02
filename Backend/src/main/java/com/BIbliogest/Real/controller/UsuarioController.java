@@ -5,27 +5,37 @@ import com.BIbliogest.Real.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "*") // permite que el frontend se conecte
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @PostMapping("/registro")
+    @Transactional
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
-        Optional<Usuario> existente = usuarioRepository.findByCorreo(usuario.getCorreo());
+        // Validar que los campos no estén vacíos
+        if (usuario.getCorreo() == null || usuario.getContrasena() == null) {
+            return ResponseEntity.badRequest().body("Correo y contraseña son obligatorios");
+        }
+
+        String correoLimpio = usuario.getCorreo().trim().toLowerCase();
+        Optional<Usuario> existente = usuarioRepository.findByCorreo(correoLimpio);
 
         if (existente.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El correo ya está registrado");
         }
 
-        // Asignar rol USER por defecto
+        usuario.setCorreo(correoLimpio);
+        usuario.setContrasena(usuario.getContrasena().trim());
+        usuario.setNombre(usuario.getNombre().trim());
         usuario.setRol("user");
 
         usuarioRepository.save(usuario);
@@ -33,23 +43,43 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
+    @Transactional(readOnly = true)
     public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
-        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByCorreo(usuario.getCorreo());
+        // Validar que los campos no estén vacíos
+        if (usuario.getCorreo() == null || usuario.getContrasena() == null) {
+            return ResponseEntity.badRequest().body("Correo y contraseña son obligatorios");
+        }
+
+        String correoLimpio = usuario.getCorreo().trim().toLowerCase();
+        String contrasenaLimpia = usuario.getContrasena().trim();
+
+        System.out.println("🔍 Buscando usuario: " + correoLimpio);
+        System.out.println("🔑 Contraseña recibida: [" + contrasenaLimpia + "]");
+
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByCorreo(correoLimpio);
 
         if (usuarioEncontrado.isEmpty()) {
+            System.out.println("❌ Usuario NO encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Correo no registrado");
         }
 
-        if (!usuarioEncontrado.get().getContrasena().equals(usuario.getContrasena())) {
+        Usuario usuarioDB = usuarioEncontrado.get();
+        String contrasenaDB = usuarioDB.getContrasena().trim();
+
+        System.out.println("🔑 Contraseña en BD: [" + contrasenaDB + "]");
+        System.out.println("✅ Usuario encontrado: " + usuarioDB.getNombre());
+
+        if (!contrasenaDB.equals(contrasenaLimpia)) {
+            System.out.println("❌ Contraseñas NO coinciden");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
         }
 
-        // Devolver todo el objeto Usuario incluyendo el rol
-        return ResponseEntity.ok(usuarioEncontrado.get());
+        System.out.println("✅ Login exitoso");
+        return ResponseEntity.ok(usuarioDB);
     }
 
-    // 👇 Método PUT para actualizar un usuario por ID
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
 
@@ -58,14 +88,14 @@ public class UsuarioController {
         }
 
         Usuario usuarioExistente = usuarioOptional.get();
-
         usuarioExistente.setNombre(usuarioActualizado.getNombre());
         usuarioExistente.setNumero(usuarioActualizado.getNumero());
-        usuarioExistente.setContrasena(usuarioActualizado.getContrasena());
-        // El rol no se actualiza desde aquí por seguridad
+
+        if (usuarioActualizado.getContrasena() != null && !usuarioActualizado.getContrasena().isEmpty()) {
+            usuarioExistente.setContrasena(usuarioActualizado.getContrasena());
+        }
 
         usuarioRepository.save(usuarioExistente);
-
         return ResponseEntity.ok(usuarioExistente);
     }
 }
