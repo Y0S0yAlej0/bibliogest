@@ -1,6 +1,9 @@
 package com.BIbliogest.Real.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "libro")
@@ -209,4 +212,8 @@ public class Libro {
     public void setIsbn(String isbn) {
         this.registro = isbn;
     }
+
+    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Reserva> reservas;
 }

@@ -1,5 +1,6 @@
 package com.BIbliogest.Real.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,10 +14,12 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name = "libro_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnoreProperties({"reservas", "descripcion"})
     private Libro libro;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnoreProperties({"reservas", "contrasena", "prestamos", "resenas"})
     private Usuario usuario;
 
     @Column(nullable = false)
@@ -25,11 +28,9 @@ public class Reserva {
     @Column(name = "fecha_reserva", nullable = false)
     private LocalDateTime fechaReserva = LocalDateTime.now();
 
-    // 🆕 Nueva: fecha cuando se aprueba la reserva
     @Column(name = "fecha_aprobacion")
     private LocalDateTime fechaAprobacion;
 
-    // 🆕 Nueva: fecha límite para devolver (15 días después de aprobación)
     @Column(name = "fecha_limite_devolucion")
     private LocalDateTime fechaLimiteDevolucion;
 
@@ -80,7 +81,6 @@ public class Reserva {
 
     public void setFechaAprobacion(LocalDateTime fechaAprobacion) {
         this.fechaAprobacion = fechaAprobacion;
-        // Automáticamente calcular fecha límite (15 días después)
         if (fechaAprobacion != null) {
             this.fechaLimiteDevolucion = fechaAprobacion.plusDays(15);
         }
@@ -118,23 +118,19 @@ public class Reserva {
                 LocalDateTime.now().isAfter(fechaLimiteDevolucion);
     }
 
-    // Obtener días restantes para devolver
     public long getDiasRestantes() {
         if (!estaAprobada() || fechaLimiteDevolucion == null) {
             return 0;
         }
-
         long dias = ChronoUnit.DAYS.between(LocalDateTime.now(), fechaLimiteDevolucion);
-        return Math.max(0, dias); // No devolver números negativos
+        return Math.max(0, dias);
     }
 
-    // Obtener días de retraso
     public long getDiasRetraso() {
         if (!estaAprobada() || fechaLimiteDevolucion == null) {
             return 0;
         }
-
         long dias = ChronoUnit.DAYS.between(fechaLimiteDevolucion, LocalDateTime.now());
-        return Math.max(0, dias); // Solo si está atrasado
+        return Math.max(0, dias);
     }
 }
