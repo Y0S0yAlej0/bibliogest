@@ -26,6 +26,15 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body("Correo y contraseña son obligatorios");
         }
 
+        // Validar longitud de contraseña
+        String contrasena = usuario.getContrasena().trim();
+        if (contrasena.length() < 8) {
+            return ResponseEntity.badRequest().body("La contraseña debe tener mínimo 8 caracteres");
+        }
+        if (contrasena.length() > 16) {
+            return ResponseEntity.badRequest().body("La contraseña debe tener máximo 16 caracteres");
+        }
+
         String correoLimpio = usuario.getCorreo().trim().toLowerCase();
         Optional<Usuario> existente = usuarioRepository.findByCorreo(correoLimpio);
 
@@ -34,7 +43,7 @@ public class UsuarioController {
         }
 
         usuario.setCorreo(correoLimpio);
-        usuario.setContrasena(usuario.getContrasena().trim());
+        usuario.setContrasena(contrasena);
         usuario.setNombre(usuario.getNombre().trim());
         usuario.setRol("user");
 
@@ -92,7 +101,12 @@ public class UsuarioController {
         usuarioExistente.setNumero(usuarioActualizado.getNumero());
 
         if (usuarioActualizado.getContrasena() != null && !usuarioActualizado.getContrasena().isEmpty()) {
-            usuarioExistente.setContrasena(usuarioActualizado.getContrasena());
+            // Validar longitud de contraseña al actualizar
+            String nuevaContrasena = usuarioActualizado.getContrasena().trim();
+            if (nuevaContrasena.length() < 8 || nuevaContrasena.length() > 16) {
+                return ResponseEntity.badRequest().body("La contraseña debe tener entre 8 y 16 caracteres");
+            }
+            usuarioExistente.setContrasena(nuevaContrasena);
         }
 
         usuarioRepository.save(usuarioExistente);

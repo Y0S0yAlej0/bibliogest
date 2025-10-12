@@ -60,40 +60,384 @@
       </div>
     </section>
 
-    <!-- Sección: Misión y Visión -->
-    <section class="section">
-      <h2>Nuestra misión</h2>
-      <p>Promover el acceso libre y equitativo al conocimiento, impulsando el aprendizaje continuo y la investigación en nuestra comunidad.</p>
+ 
 
-      <h2>Nuestra visión</h2>
-      <p>Convertirnos en la plataforma líder en gestión bibliotecaria y recursos digitales, fomentando una sociedad más informada y crítica.</p>
-    </section>
+<!-- AGREGAR DESPUÉS DE LA SECCIÓN "¿Por qué usar Bibliogest?" -->
 
-    <!-- Sección: Servicios -->
-    <section class="section">
-      <h2>Servicios que ofrecemos</h2>
-      <ul style="text-align: left; max-width: 600px; margin: 0 auto; color: var(--color-text-secondary); line-height: 2;">
-        <li>📖 Préstamo y reserva de libros físicos y digitales.</li>
-        <li>🔍 Búsqueda avanzada en nuestro catálogo en línea.</li>
-        <li>👨‍🏫 Asesoría personalizada en consultas e investigaciones.</li>
-        <li>💻 Acceso a bases de datos y recursos electrónicos exclusivos.</li>
-        <li>📅 Eventos culturales, talleres y clubes de lectura.</li>
-      </ul>
-    </section>
+<!-- Sección: Estadísticas de la Biblioteca -->
+<section class="section stats-section">
+  <h2>📊 Nuestra biblioteca en números</h2>
+  <p class="text-muted">Creciendo día a día para ofrecerte más contenido</p>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-number" data-target="15000">0</div>
+      <div class="stat-label">Total de Libros</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-number" data-target="5420">0</div>
+      <div class="stat-label">Usuarios activos</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-number" id="total-resenas" data-target="0">0</div>
+      <div class="stat-label">Reseñas escritas</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-number" data-target="95">0</div>
+      <div class="stat-label">% Satisfacción</div>
+    </div>
+  </div>
+</section>
 
-    <!-- Sección: Beneficios -->
-    <section class="section">
-      <h2>¿Por qué usar Bibliogest?</h2>
-      <p>Al registrarte en nuestra plataforma tendrás acceso a herramientas personalizadas, historial de lecturas, recomendaciones exclusivas y la posibilidad de gestionar tus préstamos en línea.</p>
-    </section>
+<!-- Sección: Géneros más populares -->
+<section class="section generos-section">
+  <h2>🎭 Explora por género</h2>
+  <p class="text-muted">Encuentra tu próxima lectura favorita</p>
+  
+  <div class="generos-grid">
+    <div class="genero-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="genero-icon">🔮</div>
+      <h3>Fantasía</h3>
 
-    <!-- Sección: Contacto -->
-    <section class="section">
-      <h2>¿Necesitas ayuda?</h2>
-      <p>Puedes escribirnos a <a href="mailto:bibliogest.notification@gmail.com" style="color: var(--color-accent); text-decoration: none; border-bottom: 2px solid var(--color-accent);">bibliogest.notification@gmail.com</a> o consultar con nuestro personal  <a href="https://www.instagram.com/sv___127/" style="color: var(--color-accent); text-decoration: none; border-bottom: 2px solid var(--color-accent);">Redes</a>. Nuestro equipo estará encantado de apoyarte en tu experiencia de lectura.</p>
-    </section>
+    </div>
+    
+    <div class="genero-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+      <div class="genero-icon">💘</div>
+      <h3>Romance</h3>
 
-  </main>
+    </div>
+    
+    <div class="genero-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+      <div class="genero-icon">🔍</div>
+      <h3>Misterio</h3>
+
+    </div>
+    
+    <div class="genero-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+      <div class="genero-icon">🧪</div>
+      <h3>Ciencia Ficción</h3>
+
+    </div>
+    
+    <div class="genero-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+      <div class="genero-icon">🎨</div>
+      <h3>Arte y Cultura</h3>
+
+    </div>
+    
+    <div class="genero-card" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+      <div class="genero-icon">📖</div>
+      <h3>Historia</h3>
+
+    </div>
+  </div>
+</section>
+
+<!-- Sección de Reseñas Reales -->
+<section class="section testimonios-section">
+  <h2>💬 Lo que dicen nuestros usuarios</h2>
+  <p class="text-muted">Experiencias reales de nuestra comunidad</p>
+  
+  <div id="testimonios-grid" class="testimonios-grid">
+    <!-- Las reseñas se cargarán dinámicamente aquí -->
+    <div class="loading-testimonios">
+      <div class="spinner"></div>
+      <p>Cargando reseñas...</p>
+    </div>
+  </div>
+  
+  <div class="ver-mas-container">
+    <a href="reseñas.html" class="ver-mas-btn">Ver todas las reseñas</a>
+  </div>
+</section>
+
+<!-- Sección: Novedades y Eventos -->
+<section class="section eventos-section">
+  <h2>📅 Próximos eventos y novedades</h2>
+  <p class="text-muted">No te pierdas nuestras actividades culturales</p>
+  
+  <div class="eventos-grid">
+    <div class="evento-card">
+      <div class="evento-fecha">
+        <span class="fecha-dia">15</span>
+        <span class="fecha-mes">NOV</span>
+      </div>
+      <div class="evento-info">
+        <h3>Club de Lectura: Cien Años de Soledad</h3>
+        <p>Únete a nuestra discusión sobre la obra maestra de García Márquez. Todos los niveles bienvenidos.</p>
+        <span class="evento-tag">Virtual</span>
+        <span class="evento-tag">Gratuito</span>
+      </div>
+    </div>
+    
+    <div class="evento-card">
+      <div class="evento-fecha">
+        <span class="fecha-dia">22</span>
+        <span class="fecha-mes">NOV</span>
+      </div>
+      <div class="evento-info">
+        <h3>Taller de Escritura Creativa</h3>
+        <p>Aprende técnicas narrativas de la mano de autores experimentados. Cupos limitados.</p>
+        <span class="evento-tag">Presencial</span>
+        <span class="evento-tag">Inscripción</span>
+      </div>
+    </div>
+    
+    <div class="evento-card">
+      <div class="evento-fecha">
+        <span class="fecha-dia">30</span>
+        <span class="fecha-mes">NOV</span>
+      </div>
+      <div class="evento-info">
+        <h3>Presentación: Nuevos Títulos de Diciembre</h3>
+        <p>Descubre las novedades que llegarán a nuestro catálogo el próximo mes.</p>
+        <span class="evento-tag">Virtual</span>
+        <span class="evento-tag">Gratuito</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección: FAQ -->
+<section class="section faq-section">
+  <h2>❓ Preguntas frecuentes</h2>
+  <p class="text-muted">Respuestas rápidas a las dudas más comunes</p>
+  
+  <div class="faq-container">
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>¿Hay que pagar para prestar un libro?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+       Para nada, el servicio de préstamo de libros es completamente gratuito para todos los usuarios registrados en nuestra plataforma. Solo necesitas tener una cuenta activa y cumplir con las políticas de préstamo establecidas.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>¿Cuántos libros puedo tener prestados al mismo tiempo?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        Puedes tener hasta 1 libro prestado en fisico. El período de préstamo es de 15 días para la devolucion, o puedes renovar la reserva.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>¿Puedo acceder desde mi dispositivo móvil?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        No, Por el momento nuestra plataforma no esta disponible para disposirivos smartphones y tablets. Sin embargo, estamos en proceso de desarrollo de una pagina móvil que estará disponible próximamente.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>¿Qué hago si un libro que busco no está disponible?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        Puedes escribirnos a traves de nuestro correo de contacto "bibliogest.notificatio@gmail.com" o redes sociales para solicitar la adquisición de nuevos títulos. Hacemos nuestro mejor esfuerzo para satisfacer las solicitudes de nuestros usuarios.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección: Call to Action Final -->
+<section class="section cta-final-section">
+  <div class="cta-final-content">
+    <h2>🚀 ¿Listo para comenzar tu aventura literaria?</h2>
+    <p>Únete a miles de lectores que ya disfrutan de nuestra plataforma</p>
+    <div class="cta-buttons">
+      <a href="directorio.html" class="cta-btn primary">Explorar el Catalogo</a>
+
+    </div>
+  </div>
+</section>
+
+<!-- CSS ADICIONAL PARA LAS NUEVAS SECCIONES -->
+<style>
+
+</style>
+
+<!-- JavaScript para cargar reseñas y estadísticas -->
+<script>
+// Función para animar un contador específico
+function animarContadorEspecifico(elemento) {
+  const target = parseInt(elemento.getAttribute('data-target'));
+  if (target === 0) return; // No animar si es 0
+  
+  const duration = 2000;
+  const increment = target / (duration / 16);
+  let current = 0;
+  
+  const updateCounter = () => {
+    current += increment;
+    if (current < target) {
+      elemento.textContent = Math.floor(current).toLocaleString();
+      requestAnimationFrame(updateCounter);
+    } else {
+      elemento.textContent = target.toLocaleString();
+    }
+  };
+  
+  updateCounter();
+}
+
+// Cargar reseñas reales desde el backend
+async function cargarResenasInicio() {
+  const container = document.getElementById('testimonios-grid');
+  
+  try {
+    const response = await fetch('http://localhost:8080/api/resenas');
+    
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const resenas = await response.json();
+    
+    // Actualizar contador de reseñas en estadísticas
+    const totalResenas = document.getElementById('total-resenas');
+    if (totalResenas) {
+      totalResenas.setAttribute('data-target', resenas.length);
+      // Animar el contador después de actualizar el valor
+      animarContadorEspecifico(totalResenas);
+    }
+    
+    // Ordenar por fecha más reciente y tomar solo las 3 primeras
+    const resenasRecientes = resenas
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+      .slice(0, 3);
+    
+    if (resenasRecientes.length === 0) {
+      container.innerHTML = `
+        <div class="loading-testimonios">
+          <p style="color: var(--color-text-muted);">Aún no hay reseñas. ¡Sé el primero en compartir tu opinión!</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Generar HTML de las reseñas
+    container.innerHTML = resenasRecientes.map(resena => {
+      const estrellas = '⭐'.repeat(resena.calificacion);
+      const iniciales = resena.usuario.nombre.split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+      
+      const fecha = new Date(resena.fecha);
+      const fechaFormateada = fecha.toLocaleDateString('es-ES', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      return `
+        <div class="testimonio-card">
+          <div class="testimonio-stars">${estrellas}</div>
+          <p class="testimonio-texto">"${resena.contenido}"</p>
+          <div class="testimonio-autor">
+            <div class="autor-avatar">${iniciales}</div>
+            <div>
+              <p class="autor-nombre">${resena.usuario.nombre}</p>
+              <p class="autor-fecha">${fechaFormateada}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+  } catch (error) {
+    console.error('Error al cargar reseñas:', error);
+    container.innerHTML = `
+      <div class="loading-testimonios">
+        <p style="color: var(--color-text-muted);">No se pudieron cargar las reseñas. Intenta más tarde.</p>
+      </div>
+    `;
+  }
+}
+
+// Animación de contadores en estadísticas
+function animateStats() {
+  const statNumbers = document.querySelectorAll('.stat-number');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const target = parseInt(entry.target.getAttribute('data-target'));
+        
+        // Saltar el contador de reseñas ya que se anima después de cargar
+        if (entry.target.id === 'total-resenas') {
+          observer.unobserve(entry.target);
+          return;
+        }
+        
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        let current = 0;
+        
+        const updateCounter = () => {
+          current += increment;
+          if (current < target) {
+            entry.target.textContent = Math.floor(current).toLocaleString();
+            requestAnimationFrame(updateCounter);
+          } else {
+            entry.target.textContent = target.toLocaleString();
+            if (target === 95) {
+              entry.target.textContent = target + '%';
+            }
+          }
+        };
+        
+        updateCounter();
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  statNumbers.forEach(stat => observer.observe(stat));
+}
+
+// FAQ Toggle
+function inicializarFAQ() {
+  const faqItems = document.querySelectorAll('.faq-item');
+  
+  faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    
+    question.addEventListener('click', () => {
+      faqItems.forEach(otherItem => {
+        if (otherItem !== item && otherItem.classList.contains('active')) {
+          otherItem.classList.remove('active');
+        }
+      });
+      
+      item.classList.toggle('active');
+    });
+  });
+}
+
+// Inicializar todo cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+  cargarResenasInicio();
+  animateStats();
+  inicializarFAQ();
+});
+</script>
 
   <!-- Integraciones con js -->
   
@@ -112,6 +456,7 @@
   
   <!-- Script de libros aleatorios -->
   <script src="../js/libros-aleatorios.js"></script>
+  <script src="../Js/datos-curiosos.js"></script>
 
 </body>
 </html>

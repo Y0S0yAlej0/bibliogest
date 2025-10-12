@@ -72,7 +72,7 @@ public class LibroController {
         }
     }
 
-
+// Eliminar un libro por id
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> eliminarLibro(@PathVariable Long id) {
@@ -174,7 +174,7 @@ public class LibroController {
         }
     }
 
-    // 🔧 MÉTODO AUXILIAR: Ver reservas con JDBC directo
+    // 🔧 METODO AUXILIAR: Ver reservas con JDBC directo
     @GetMapping("/{id}/reservas")
     public ResponseEntity<?> obtenerReservasDeLibro(@PathVariable Long id) {
         try {
