@@ -72,7 +72,7 @@ if (submenuToggle && submenuContainer) {
                 timer: 1000,
                 showConfirmButton: false
               }).then(() => {
-                window.location.href = "index.html";
+                window.location.href = "../index.html";
               });
             }
           });
