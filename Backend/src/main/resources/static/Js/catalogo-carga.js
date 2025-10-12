@@ -1477,4 +1477,6 @@ window.toggleFavorito = function(libroId) {
     }
     
     return !yaEsFavorito; // Retorna true si se agregó, false si se quitó
+
+    
 };

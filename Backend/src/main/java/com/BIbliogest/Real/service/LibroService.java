@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LibroService {
@@ -24,9 +25,15 @@ public class LibroService {
         return libroRepository.findAll();
     }
 
-    // 🔧 MÉTODO CORREGIDO: Obtener libro por ID
+    // 🆕 Obtener libros por categoría
+    public List<Libro> obtenerPorCategoria(String categoria) {
+        return libroRepository.findAll().stream()
+                .filter(libro -> categoria.equalsIgnoreCase(libro.getGenero()))
+                .collect(Collectors.toList());
+    }
+
+    // Obtener libro por ID
     public Optional<Libro> obtenerPorId(Long id) {
-        // ✅ CORREGIDO: Usar el repositorio para buscar por ID
         return libroRepository.findById(id);
     }
 
@@ -36,7 +43,6 @@ public class LibroService {
         if (libroExistente.isPresent()) {
             Libro libro = libroExistente.get();
 
-            // Campos básicos
             if (libroActualizado.getTitulo() != null && !libroActualizado.getTitulo().trim().isEmpty()) {
                 libro.setTitulo(libroActualizado.getTitulo());
             }
@@ -49,10 +55,8 @@ public class LibroService {
             if (libroActualizado.getRegistro() != null && !libroActualizado.getRegistro().trim().isEmpty()) {
                 libro.setRegistro(libroActualizado.getRegistro());
             }
-
-            // Campos nuevos
-            if (libroActualizado.getCategoria() != null && !libroActualizado.getCategoria().trim().isEmpty()) {
-                libro.setCategoria(libroActualizado.getCategoria());
+            if (libroActualizado.getGenero() != null && !libroActualizado.getGenero().trim().isEmpty()) {
+                libro.setGenero(libroActualizado.getGenero());
             }
             if (libroActualizado.getSignaturaTopografica() != null && !libroActualizado.getSignaturaTopografica().trim().isEmpty()) {
                 libro.setSignaturaTopografica(libroActualizado.getSignaturaTopografica());
@@ -69,8 +73,6 @@ public class LibroService {
             if (libroActualizado.getObservaciones() != null && !libroActualizado.getObservaciones().trim().isEmpty()) {
                 libro.setObservaciones(libroActualizado.getObservaciones());
             }
-
-            // Campos existentes
             if (libroActualizado.getImagen() != null && !libroActualizado.getImagen().trim().isEmpty()) {
                 libro.setImagen(libroActualizado.getImagen());
             }
@@ -98,7 +100,7 @@ public class LibroService {
         }
     }
 
-    // 🔧 MÉTODO ADICIONAL: Verificar si un libro existe
+    // Verificar si un libro existe
     public boolean existe(Long id) {
         return libroRepository.existsById(id);
     }
