@@ -15,57 +15,47 @@
   <section class="busqueda">
     <h1>📚 Catálogo de Libros</h1>
     <form id="form-busqueda">
-      <label for="buscar-input"></label><input type="text" id="buscar-input" placeholder="🔍 Buscar por título o autor..." />
+      <label for="buscar-input"></label>
+      <input type="text" id="buscar-input" placeholder="🔍 Buscar por título, autor o categoría..." />
       <button type="submit">Buscar</button>
     </form>
   </section>
 
-  <!-- 🆕 Contenedor con sidebar de categorías y libros -->
-  <div class="contenedor-principal">
-    <!-- Panel lateral de categorías -->
-    <aside class="panel-categorias">
-      <div class="categoria-header">
-        <h2>📚 Categorías</h2>
-        <button id="btn-toggle-categorias" class="btn-toggle-mobile">
-          <i class="fas fa-filter"></i>
-        </button>
-      </div>
-
-      <div class="categorias-lista" id="categorias-lista">
-        <button class="categoria-item activa" data-categoria="todas">
-          <i class="fas fa-books"></i>
-          <span>Todas las categorías</span>
-          <span class="contador-categoria" id="contador-todas">0</span>
-        </button>
-        <!-- Las categorías se cargarán dinámicamente aquí -->
-      </div>
-    </aside>
-
-    <!-- Contenedor de libros -->
-    <div class="contenedor-libros-wrapper">
-      <!-- Información de filtro activo -->
-      <div class="filtro-activo" id="filtro-activo" style="display: none;">
-        <span id="filtro-texto"></span>
-        <button id="btn-limpiar-filtro" class="btn-limpiar">
-          <i class="fas fa-times"></i> Limpiar filtro
-        </button>
-      </div>
-
-      <!-- Aquí se cargarán las tarjetas de libros dinámicamente -->
-      <section class="libros" id="libros-container"></section>
-
-      <!-- 🛑 Mensaje cuando no hay resultados -->
-      <div id="mensaje-sin-resultados" class="oculto">
-        <div class="icono">😕</div>
-        <div class="texto">No se encontraron libros.</div>
-      </div>
+  <!-- Panel de categorías compacto -->
+  <aside class="panel-categorias">
+    <div class="categoria-header">
+      <h2><i class="fas fa-tags"></i> Categorías</h2>
+      <button id="btn-toggle-categorias" class="btn-toggle-mobile">
+        <i class="fas fa-filter"></i>
+      </button>
     </div>
+
+    <div class="categorias-lista" id="categorias-lista">
+      <button class="categoria-item activa" data-categoria="todas">
+        <i class="fas fa-books"></i>
+        <span>Todas</span>
+        <span class="contador-categoria" id="contador-todas">0</span>
+      </button>
+      <!-- Las categorías se cargarán dinámicamente aquí -->
+    </div>
+  </aside>
+
+  <!-- Información de filtro activo -->
+  <div class="filtro-activo" id="filtro-activo" style="display: none;">
+    <span id="filtro-texto"></span>
+    <button id="btn-limpiar-filtro" class="btn-limpiar">
+      <i class="fas fa-times"></i> Limpiar filtro
+    </button>
   </div>
 
-  <!-- 🆕 Botón flotante para agregar libro (solo visible para admins) -->
-  <button id="btn-agregar-libro" class="btn-flotante" title="Agregar nuevo libro">
-    ➕
-  </button>
+  <!-- Grid de libros -->
+  <section class="libros" id="libros-container"></section>
+
+  <!-- 🛑 Mensaje cuando no hay resultados -->
+  <div id="mensaje-sin-resultados">
+    <div class="icono">😕</div>
+    <div class="texto">No se encontraron libros.</div>
+  </div>
 </main>
 
 <!-- Scripts -->
@@ -76,18 +66,5 @@
 <script src="../Js/include-footer.js"></script>
 <script src="../Js/catalogo-carga.js" defer></script>
 <script src="../Js/favoritos.js"></script>
-
-<style>
-  /* === ESTILOS PARA EL PANEL DE CATEGORÍAS === */
- 
-</style>
-
-<script>
-  // Toggle del panel de categorías en móvil
-  document.getElementById('btn-toggle-categorias')?.addEventListener('click', function() {
-    const lista = document.getElementById('categorias-lista');
-    lista.classList.toggle('visible');
-  });
-</script>
 </body>
 </html>
