@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Gestión de Biblioteca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../Css/admin-dashboard.css">
+  <link rel="icon" href="../Assets/Icons/favicon.svg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-book-reader"></i>
+      <h2>Admin Panel</h2>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a href="#dashboard" class="nav-item active" data-section="dashboard">
+        <i class="fas fa-chart-line"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#libros" class="nav-item" data-section="libros">
+        <i class="fas fa-books"></i>
+        <span>Gestión de Libros</span>
+      </a>
+      <a href="#categorias" class="nav-item" data-section="categorias">
+        <i class="fas fa-tags"></i>
+        <span>Categorías</span>
+      </a>
+      <a href="#reservas" class="nav-item" data-section="reservas">
+        <i class="fas fa-bookmark"></i>
+        <span>Gestión de Reservas</span>
+      </a>
+      <a href="#estadisticas" class="nav-item" data-section="estadisticas">
+        <i class="fas fa-chart-pie"></i>
+        <span>Estadísticas</span>
+      </a>
+      <a href="directorio.html" class="nav-item">
+        <i class="fas fa-eye"></i>
+        <span>Ver Catálogo</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 id="pageTitle">Dashboard General</h1>
+      <div class="header-actions">
+        <button class="btn-header" id="btnRefresh">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+        <div class="user-info">
+          <i class="fas fa-user-shield"></i>
+          <span id="adminName">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Section -->
+    <section id="section-dashboard" class="content-section active">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <i class="fas fa-books"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="totalLibros">0</h3>
+            <p>Total de Libros</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="librosDisponibles">0</h3>
+            <p>Disponibles</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon red">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="librosAgotados">0</h3>
+            <p>Agotados</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="totalCategorias">0</h3>
+            <p>Categorías</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">
+            <i class="fas fa-bookmark"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="totalReservas">0</h3>
+            <p>Total Reservas</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon yellow">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="reservasPendientes">0</h3>
+            <p>Pendientes</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3><i class="fas fa-chart-bar"></i> Libros por Categoría</h3>
+          <canvas id="categoriasChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+          <h3><i class="fas fa-chart-pie"></i> Estado de Disponibilidad</h3>
+          <canvas id="estadoChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Books -->
+      <div class="recent-books">
+        <h3><i class="fas fa-clock"></i> Últimos Libros Agregados</h3>
+        <div id="recentBooksContainer" class="books-list"></div>
+      </div>
+    </section>
+
+    <!-- Gestión de Libros Section -->
+    <section id="section-libros" class="content-section">
+      <div class="section-header">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchLibros" placeholder="Buscar libros por título, autor o categoría...">
+        </div>
+        <button class="btn-primary" id="btnAgregarLibro">
+          <i class="fas fa-plus"></i> Agregar Libro
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar">
+        <select id="filterCategoria" class="filter-select">
+          <option value="">Todas las categorías</option>
+        </select>
+        
+        <select id="filterEstado" class="filter-select">
+          <option value="">Todos los estados</option>
+          <option value="disponible">Disponibles</option>
+          <option value="agotado">Agotados</option>
+        </select>
+        
+        <button class="btn-secondary" id="btnLimpiarFiltros">
+          <i class="fas fa-times"></i> Limpiar
+        </button>
+      </div>
+
+      <!-- Books Table -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Portada</th>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Categoría</th>
+              <th>Cantidad</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaLibros">
+            <tr>
+              <td colspan="7" class="text-center">
+                <div class="loading">
+                  <i class="fas fa-spinner fa-spin"></i> Cargando libros...
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- Categorías Section -->
+    <section id="section-categorias" class="content-section">
+      <div class="categories-grid" id="categoriasGrid"></div>
+    </section>
+
+    <!-- Gestión de Reservas Section -->
+    <section id="section-reservas" class="content-section">
+      <!-- Stats de Reservas -->
+      <div class="reservas-stats">
+        <div class="stat-card-small">
+          <i class="fas fa-clock"></i>
+          <div>
+            <h4 id="statPendientes">0</h4>
+            <p>Pendientes</p>
+          </div>
+        </div>
+        <div class="stat-card-small">
+          <i class="fas fa-check"></i>
+          <div>
+            <h4 id="statAprobadas">0</h4>
+            <p>Aprobadas</p>
+          </div>
+        </div>
+        <div class="stat-card-small">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <h4 id="statVencidas">0</h4>
+            <p>Vencidas</p>
+          </div>
+        </div>
+        <div class="stat-card-small">
+          <i class="fas fa-undo"></i>
+          <div>
+            <h4 id="statDevueltas">0</h4>
+            <p>Devueltas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchReservas" placeholder="Buscar por usuario, libro o ID...">
+        </div>
+        <button class="btn-primary" id="btnActualizarReservas">
+          <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+      </div>
+
+      <!-- Filtros de Reservas -->
+      <div class="filters-bar">
+        <select id="filterEstadoReserva" class="filter-select">
+          <option value="">Todos los estados</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobada">Aprobadas</option>
+          <option value="rechazada">Rechazadas</option>
+          <option value="vencida">Vencidas</option>
+          <option value="devuelta">Devueltas</option>
+        </select>
+        
+        <select id="filterOrdenReserva" class="filter-select">
+          <option value="recientes">Más recientes</option>
+          <option value="antiguas">Más antiguas</option>
+          <option value="proximasVencer">Próximas a vencer</option>
+        </select>
+        
+        <button class="btn-secondary" id="btnLimpiarFiltrosReservas">
+          <i class="fas fa-times"></i> Limpiar
+        </button>
+      </div>
+
+      <!-- Tabla de Reservas -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Libro</th>
+              <th>Fecha Reserva</th>
+              <th>Fecha Límite</th>
+              <th>Estado</th>
+              <th>Días</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaReservas">
+            <tr>
+              <td colspan="8" class="text-center">
+                <div class="loading">
+                  <i class="fas fa-spinner fa-spin"></i> Cargando reservas...
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación de Reservas -->
+      <div class="pagination" id="paginationReservas"></div>
+    </section>
+
+    <!-- Estadísticas Section -->
+    <section id="section-estadisticas" class="content-section">
+      <div class="stats-detailed">
+        <h3><i class="fas fa-chart-line"></i> Estadísticas Detalladas</h3>
+        <div id="estadisticasDetalle"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../Js/admin-dashboard.js"></script>
+</body>
+</html>

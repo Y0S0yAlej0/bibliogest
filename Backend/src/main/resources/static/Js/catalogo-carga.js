@@ -198,42 +198,29 @@ document.addEventListener("DOMContentLoaded", function () {
       const estadoClase = disponible ? "disponible" : "agotado";
 
       card.innerHTML = `
-        <img src="${libro.imagen || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
-        <div class="info">
-          <h3>${libro.titulo}</h3>
-          <p><strong>Autor:</strong> ${libro.autor}</p>
-          <p><strong>Categoría:</strong> ${libro.categoria || libro.genero || 'N/A'}</p>
-          <p><strong>Registro:</strong> ${libro.registro || 'N/A'}</p>
-          <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
-          <p>${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
-          
-          <div class="acciones-libro">
-            ${rolUsuario === "ADMIN" ? `
-              <div class="acciones-admin">
-                <button class="boton-editar" data-id="${libro.id}">✏️ Editar</button>
-                <button class="boton-eliminar" data-id="${libro.id}">🗑️ Eliminar</button>
-              </div>
-            ` : ''}
-            
-            <button class="boton-reservar" data-id="${libro.id}" ${!disponible ? 'disabled' : ''}>
-              📚 ${disponible ? 'Reservar' : 'Agotado'}
-            </button>
+        <div class="card-clickeable" data-id="${libro.id}">
+          <img src="${libro.imagen || 'ruta/por_defecto.jpg'}" alt="Portada de ${libro.titulo}">
+          <div class="info">
+            <h3>${libro.titulo}</h3>
+            <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
           </div>
+        </div>
+        <div class="card-acciones">
+          <button class="boton-reservar" data-id="${libro.id}" ${!disponible ? 'disabled' : ''}>
+            📚 ${disponible ? 'Reservar' : 'Agotado'}
+          </button>
+          ${rolUsuario === "ADMIN" ? `
+            <div class="acciones-admin">
+              <button class="boton-editar" data-id="${libro.id}">✏️</button>
+              <button class="boton-eliminar" data-id="${libro.id}">🗑️</button>
+            </div>
+          ` : ''}
         </div>
       `;
 
-      card.addEventListener("click", (e) => {
-        const selectoresEvitar = [
-          '.acciones-libro',
-          '.boton-editar', 
-          '.boton-eliminar', 
-          '.boton-reservar',
-          '.acciones-admin',
-          'button'
-        ];
-        
-        if (selectoresEvitar.some(selector => e.target.closest(selector))) return;
-
+      // Click en la tarjeta para ver detalles
+      const cardClickeable = card.querySelector('.card-clickeable');
+      cardClickeable.addEventListener("click", () => {
         Swal.fire({
           title: libro.titulo,
           html: `
@@ -247,13 +234,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 <p><strong>Registro:</strong> ${libro.registro || 'N/A'}</p>
                 ${libro.signaturaTopografica ? `<p><strong>Signatura:</strong> ${libro.signaturaTopografica}</p>` : ''}
                 ${libro.paginas ? `<p><strong>Páginas:</strong> ${libro.paginas}</p>` : ''}
-                <p class="modal-sinopsis"><strong>Sinopsis:</strong> ${libro.sinopsis || libro.descripcion || 'Sin descripción'}</p>
+                <p class="estado-libro ${estadoClase}"><strong>${estadoTexto}</strong></p>
+                <p class="modal-descripcion"><strong>Sinopsis:</strong><br>${libro.sinopsis || libro.descripcion || 'Sin descripción disponible'}</p>
               </div>
             </div>
           `,
           showCloseButton: true,
           confirmButtonText: "Cerrar",
-          width: "600px",
+          width: "650px",
           background: "#1e1e1e",
           color: "#f5f5f5"
         });
@@ -264,7 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     agregarEventos();
   }
-
   // === BÚSQUEDA === //
   if (inputBuscar) {
     inputBuscar.addEventListener("input", function () {
