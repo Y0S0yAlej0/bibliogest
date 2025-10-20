@@ -1,3 +1,5 @@
+//Este archivo gestiona la página de "Mis Favoritos" en la aplicación de la biblioteca digital. Por el momento no se esta utilizando
+
 document.addEventListener("DOMContentLoaded", function () {
     // === ELEMENTOS DEL DOM === //
     const favoritosGrid = document.getElementById("favoritos-grid");
