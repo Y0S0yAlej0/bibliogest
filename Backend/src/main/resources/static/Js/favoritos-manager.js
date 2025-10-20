@@ -1,3 +1,6 @@
+//Este archivo gestiona la lógica de favoritos en la aplicación, sin embargo por este momento no se está utilizando en ninguna parte del proyecto.
+
+
 class FavoritosManager {
     constructor() {
         this.usuario = null;

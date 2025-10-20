@@ -17,6 +17,9 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByUsuario(Usuario usuario);
     List<Reserva> findByUsuarioAndLibroAndEstadoIn(Usuario usuario, Libro libro, List<String> estados);
 
+    // 🆕 NUEVO MÉTODO: Buscar reservas de un usuario con estados específicos (sin filtrar por libro)
+    List<Reserva> findByUsuarioAndEstadoIn(Usuario usuario, List<String> estados);
+
     // 🔧 MÉTODOS CORREGIDOS PARA ELIMINACIÓN EN CASCADA
 
     // ✅ Método 1: Obtener todas las reservas de un libro específico (SEGURO)
@@ -26,14 +29,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     // ✅ Método 2: Contar reservas de un libro específico (SEGURO)
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.libro.id = :libroId")
     long countByLibroId(@Param("libroId") Long libroId);
-
-    // ❌ REMOVIDO: El método deleteByLibroId que causaba problemas
-    // @Modifying
-    // @Transactional
-    // @Query("DELETE FROM Reserva r WHERE r.libro.id = :libroId")
-    // int deleteByLibroId(@Param("libroId") Long libroId);
-
-    // 🆕 NUEVOS MÉTODOS ALTERNATIVOS MÁS SEGUROS:
 
     // ✅ Método 3: Eliminar usando SQL nativo (más directo)
     @Modifying

@@ -31,6 +31,7 @@ public class ReservaService {
 
     /**
      * Crear una nueva reserva para un usuario
+     * ⚠️ LÍMITE: Solo 1 reserva activa por usuario
      */
     public Reserva crearReserva(Long libroId, Long usuarioId) {
         Libro libro = libroRepository.findById(libroId)
@@ -39,15 +40,18 @@ public class ReservaService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Verificar si ya tiene una reserva activa de este libro
-        List<Reserva> reservasActivas = reservaRepository.findByUsuarioAndLibroAndEstadoIn(
-                usuario, libro, Arrays.asList("pendiente", "aprobada")
+        // 🆕 VERIFICAR SI YA TIENE UNA RESERVA ACTIVA (de cualquier libro)
+        List<Reserva> reservasActivas = reservaRepository.findByUsuarioAndEstadoIn(
+                usuario, Arrays.asList("pendiente", "aprobada")
         );
 
         if (!reservasActivas.isEmpty()) {
-            throw new RuntimeException("Ya tienes una reserva activa para este libro");
+            Reserva reservaExistente = reservasActivas.get(0);
+            String tituloLibroReservado = reservaExistente.getLibro().getTitulo();
+            throw new RuntimeException("Ya tienes una reserva activa del libro: '" + tituloLibroReservado + "'. Debes devolver o cancelar tu reserva actual antes de hacer una nueva.");
         }
 
+        // Verificar disponibilidad del libro
         if (libro.getCantidad() <= 0) {
             throw new RuntimeException("No hay ejemplares disponibles");
         }
@@ -92,7 +96,7 @@ public class ReservaService {
                 throw new RuntimeException("No hay ejemplares disponibles para este libro");
             }
 
-            // 🆕 Usar el método aprobar() que establece las fechas automáticamente
+            // Usar el método aprobar() que establece las fechas automáticamente
             reserva.aprobar();
 
             libro.setCantidad(libro.getCantidad() - 1);

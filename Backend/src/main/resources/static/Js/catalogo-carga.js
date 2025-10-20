@@ -17,12 +17,26 @@ document.addEventListener("DOMContentLoaded", function () {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const usuarioId = usuario ? usuario.id : null;
 
-  // === TOGGLE CATEGORÍAS EN MÓVIL === //
-  if (btnToggleCategorias) {
-    btnToggleCategorias.addEventListener('click', function() {
-      categoriasLista.classList.toggle('visible');
-    });
-  }
+// === TOGGLE CATEGORÍAS === //
+if (btnToggleCategorias) {
+  const panelCategorias = document.querySelector('.panel-categorias');
+  
+  btnToggleCategorias.addEventListener('click', function(e) {
+    e.stopPropagation();
+    categoriasLista.classList.toggle('visible');
+    this.classList.toggle('activo');
+    panelCategorias.classList.toggle('expandido');
+  });
+
+  // Cerrar al hacer clic fuera
+  document.addEventListener('click', function(e) {
+    if (!panelCategorias.contains(e.target) && categoriasLista.classList.contains('visible')) {
+      categoriasLista.classList.remove('visible');
+      btnToggleCategorias.classList.remove('activo');
+      panelCategorias.classList.remove('expandido');
+    }
+  });
+}
 
   // === CARGAR CATEGORÍAS DESDE EL BACKEND === //
   async function cargarCategorias() {
