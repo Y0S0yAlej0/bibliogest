@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
             background: '#1e1e1e',
             color: '#fff'
           }).then(() => {
-            window.location.href = "../index.html";
+            window.location.href = "../Pages/inicio.html";
           });
         })
         .catch(error => {

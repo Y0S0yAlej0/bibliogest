@@ -30,9 +30,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ Dashboard cargado");
 });
 
-// ============================== //
-// 🔐 VERIFICAR ADMIN
-// ============================== //
+
+// VERIFICAR ADMIN
+
 function verificarAdmin() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   
@@ -50,9 +50,9 @@ function verificarAdmin() {
   return true;
 }
 
-// ============================== //
-// 🎯 NAVEGACIÓN
-// ============================== //
+
+//  NAVEGACIÓN
+
 function setupNavigation() {
   document.querySelectorAll('.nav-item[data-section]').forEach(item => {
     item.addEventListener('click', (e) => {
@@ -84,9 +84,9 @@ function cambiarSeccion(seccion) {
   cargarDatosSeccion(seccion);
 }
 
-// ============================== //
-// 📱 SIDEBAR TOGGLE
-// ============================== //
+
+// SIDEBAR TOGGLE
+
 function setupSidebarToggle() {
   const menuToggle = document.getElementById('menuToggle');
   const sidebar = document.getElementById('sidebar');
@@ -100,9 +100,9 @@ function setupSidebarToggle() {
   });
 }
 
-// ============================== //
-// 📊 CARGAR DATOS
-// ============================== //
+
+// CARGAR DATOS
+
 async function cargarDatosIniciales() {
   try {
     await Promise.all([cargarLibros(), cargarCategorias(), cargarReservas()]);

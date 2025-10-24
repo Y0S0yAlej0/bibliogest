@@ -68,9 +68,9 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const adminLink = document.getElementById('adminLink');
 
-    // ============================================
+
     // VERIFICACIÓN DE ROL DE USUARIO
-    // ============================================
+
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
     // Mostrar panel de admin solo si el usuario es administrador
@@ -78,9 +78,9 @@
       adminLink.style.display = 'block';
     }
 
-    // ============================================
+
     // TOGGLE DEL SIDEBAR
-    // ============================================
+
     function toggleSidebar() {
       const isOpen = sidebar.classList.contains('open');
 
@@ -122,9 +122,9 @@
       }
     });
 
-    // ============================================
+
     // FUNCIONALIDAD DE CERRAR SESIÓN
-    // ============================================
+
     logoutBtn.addEventListener('click', function() {
       // Modal de confirmación
       Swal.fire({
@@ -179,9 +179,9 @@
 
     setActiveLink();
 
-    // ============================================
+
     // ESTILOS PERSONALIZADOS PARA SWEETALERT2
-    // ============================================
+
     const style = document.createElement('style');
     style.textContent = `
         .swal2-popup {
