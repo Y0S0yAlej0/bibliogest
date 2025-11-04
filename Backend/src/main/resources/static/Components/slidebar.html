@@ -7,6 +7,75 @@
   <!-- SweetAlert2 para los modales de confirmación -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../css/slide-styles.css">
+  
+  <style>
+    /* Estilos para el botón flotante de PDF */
+    .floating-pdf-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+      transition: all 0.3s ease;
+      z-index: 999;
+      text-decoration: none;
+      border: none;
+    }
+
+    .floating-pdf-button:hover {
+      transform: scale(1.1) translateY(-3px);
+      box-shadow: 0 12px 35px rgba(74, 144, 226, 0.6);
+    }
+
+    .floating-pdf-button:active {
+      transform: scale(0.95);
+    }
+
+    .floating-pdf-button svg {
+      width: 32px;
+      height: 32px;
+      fill: white;
+    }
+
+    /* Animación de pulso */
+    @keyframes pulse-pdf {
+      0% {
+        box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+      }
+      50% {
+        box-shadow: 0 8px 25px rgba(74, 144, 226, 0.7), 0 0 0 10px rgba(74, 144, 226, 0.1);
+      }
+      100% {
+        box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+      }
+    }
+
+    .floating-pdf-button {
+      animation: pulse-pdf 2s infinite;
+    }
+
+    /* Ajuste para móviles */
+    @media (max-width: 768px) {
+      .floating-pdf-button {
+        bottom: 20px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+      }
+      
+      .floating-pdf-button svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -58,6 +127,13 @@
     <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
   </div>
 </div>
+
+<!-- BOTÓN FLOTANTE DE PDF -->
+<a href="../Assets/Manual_usuario.pdf" class="floating-pdf-button" target="_blank" title="Ver Manual de Usuario">
+  <svg viewBox="0 0 24 24">
+    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M10,19L12,15H9V10H15V15L13,19H10Z"/>
+  </svg>
+</a>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
