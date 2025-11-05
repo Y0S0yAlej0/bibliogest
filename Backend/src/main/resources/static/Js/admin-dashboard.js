@@ -654,62 +654,64 @@ function generarFormularioLibro(libro = {}) {
     <div class="form-container" style="max-height: 500px; overflow-y: auto; text-align: left;">
       <div class="form-section">
         <h3 class="section-title">📖 Información Principal</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
           <div class="form-field">
             <label>Título *</label>
-            <input id="swal-titulo" class="swal2-input" style="margin: 5px 0;" value="${libro.titulo || ''}" placeholder="Título del libro">
+            <input id="swal-titulo" class="swal2-input" style="margin: 5px 0; width: 95%;" value="${libro.titulo || ''}" placeholder="Título del libro">
           </div>
           <div class="form-field">
             <label>Autor *</label>
-            <input id="swal-autor" class="swal2-input" style="margin: 5px 0;" value="${libro.autor || ''}" placeholder="Nombre del autor">
+            <input id="swal-autor" class="swal2-input" style="margin: 5px 0; width: 95%;" value="${libro.autor || ''}" placeholder="Nombre del autor">
           </div>
         </div>
-        <div class="form-grid">
+        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
           <div class="form-field">
             <label>Categoría *</label>
-            <select id="swal-categoria" class="swal2-select" style="margin: 5px 0; width: 100%;">
+            <select id="swal-categoria" class="swal2-select" style="margin: 5px 0; width: 95%;">
               <option value="">Selecciona...</option>
               ${opcionesCategorias}
             </select>
           </div>
           <div class="form-field">
-            <label>Cantidad *</label>
-            <input id="swal-cantidad" class="swal2-input" type="number" value="${libro.cantidad || 1}" min="0" style="margin: 5px 0;">
+            <label>Cantidad * (0 = agotado)</label>
+            <input id="swal-cantidad" class="swal2-input" type="number" value="${libro.cantidad !== undefined ? libro.cantidad : 1}" min="0" style="margin: 5px 0; width: 95%;">
           </div>
         </div>
       </div>
 
       <div class="form-section" style="margin-top: 15px;">
-        <h3 class="section-title">📊 Detalles</h3>
-        <div class="form-field">
-          <label>Registro</label>
-          <input id="swal-registro" class="swal2-input" style="margin: 5px 0;" value="${libro.registro || ''}" placeholder="Código">
-        </div>
-        <div class="form-field">
-          <label>Signatura</label>
-          <input id="swal-signatura" class="swal2-input" style="margin: 5px 0;" value="${libro.signaturaTopografica || ''}" placeholder="Ej: 863.6 G216c">
-        </div>
-        <div class="form-field">
-          <label>Páginas</label>
-          <input id="swal-paginas" class="swal2-input" type="number" min="1" style="margin: 5px 0;" value="${libro.paginas || ''}">
+        <h3 class="section-title">📊 Detalles Adicionales</h3>
+        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+          <div class="form-field">
+            <label>Registro</label>
+            <input id="swal-registro" class="swal2-input" style="margin: 5px 0; width: 95%;" value="${libro.registro || ''}" placeholder="Código">
+          </div>
+          <div class="form-field">
+            <label>Signatura</label>
+            <input id="swal-signatura" class="swal2-input" style="margin: 5px 0; width: 95%;" value="${libro.signaturaTopografica || ''}" placeholder="Ej: 863.6 G216c">
+          </div>
+          <div class="form-field">
+            <label>Páginas</label>
+            <input id="swal-paginas" class="swal2-input" type="number" min="1" style="margin: 5px 0; width: 95%;" value="${libro.paginas || ''}">
+          </div>
         </div>
       </div>
 
       <div class="form-section" style="margin-top: 15px;">
         <h3 class="section-title">🖼️ Multimedia</h3>
         <div class="form-field">
-          <label>URL Imagen</label>
-          <input id="swal-imagen" class="swal2-input" style="margin: 5px 0;" value="${libro.imagen || ''}" placeholder="https://...">
+          <label>URL Portada</label>
+          <input id="swal-imagen" class="swal2-input" type="url" style="margin: 5px 0; width: 98%;" value="${libro.imagen || ''}" placeholder="https://ejemplo.com/imagen.jpg">
+          <small style="color: #999; font-size: 0.85rem;">Pega aquí la URL completa de la imagen de portada</small>
         </div>
         <div class="form-field">
           <label>Sinopsis</label>
-          <textarea id="swal-sinopsis" class="swal2-textarea" style="margin: 5px 0;" placeholder="Descripción...">${libro.sinopsis || ''}</textarea>
+          <textarea id="swal-sinopsis" class="swal2-textarea" style="margin: 5px 0; width: 98%; min-height: 100px;" placeholder="Descripción del libro...">${libro.sinopsis || ''}</textarea>
         </div>
       </div>
     </div>
   `;
 }
-
 function validarFormularioLibro() {
   const titulo = document.getElementById("swal-titulo").value.trim();
   const autor = document.getElementById("swal-autor").value.trim();

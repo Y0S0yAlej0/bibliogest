@@ -5,7 +5,6 @@ import com.BIbliogest.Real.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +18,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/registro")
     @Transactional
@@ -48,9 +45,8 @@ public class UsuarioController {
 
         usuario.setCorreo(correoLimpio);
 
-        // Encriptar la contraseña antes de guardar
-        String contrasenaEncriptada = passwordEncoder.encode(contrasena);
-        usuario.setContrasena(contrasenaEncriptada);
+        // (sin cifrar)
+        usuario.setContrasena(contrasena);
 
         usuario.setNombre(usuario.getNombre().trim());
         usuario.setRol("user");
@@ -80,12 +76,12 @@ public class UsuarioController {
         }
 
         Usuario usuarioDB = usuarioEncontrado.get();
-        String contrasenaEncriptadaDB = usuarioDB.getContrasena();
+        String contrasenaDB = usuarioDB.getContrasena();
 
         System.out.println("✅ Usuario encontrado: " + usuarioDB.getNombre());
 
-        // Comparar contraseña usando passwordEncoder.matches()
-        if (!passwordEncoder.matches(contrasenaLimpia, contrasenaEncriptadaDB)) {
+        // ✅ COMPARAR CONTRASEÑAS EN TEXTO PLANO (sin cifrado)
+        if (!contrasenaLimpia.equals(contrasenaDB)) {
             System.out.println("❌ Contraseñas NO coinciden");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
         }
@@ -114,9 +110,8 @@ public class UsuarioController {
                 return ResponseEntity.badRequest().body("La contraseña debe tener entre 8 y 16 caracteres");
             }
 
-            // Encriptar la nueva contraseña
-            String contrasenaEncriptada = passwordEncoder.encode(nuevaContrasena);
-            usuarioExistente.setContrasena(contrasenaEncriptada);
+            // ✅ GUARDAR NUEVA CONTRASEÑA EN TEXTO PLANO (sin cifrar)
+            usuarioExistente.setContrasena(nuevaContrasena);
         }
 
         usuarioRepository.save(usuarioExistente);

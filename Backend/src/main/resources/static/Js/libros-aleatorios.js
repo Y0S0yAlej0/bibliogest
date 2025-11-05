@@ -2,7 +2,7 @@
 (function() {
   // Configuración de la API
   const API_BASE_URL = 'http://localhost:8080/api/libros'; // Ajusta el puerto si es necesario
-  const CANTIDAD_LIBROS = 8;
+  const CANTIDAD_LIBROS = 5;
 
   // Función para crear HTML de un libro
   function crearLibroHTML(libro) {
